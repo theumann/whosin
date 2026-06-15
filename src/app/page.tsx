@@ -5,9 +5,14 @@ export default function Home() {
       <p style={{ color: "#94a3b8", marginTop: 0 }}>
         Rosters, events, and one-tap WhatsApp updates — for the coach.
       </p>
-      <p style={{ marginTop: "2rem", color: "#64748b" }}>
-        Scaffold ready. Phase 1: group &amp; roster &rarr; events &rarr; event
-        status screen &rarr; Send to WhatsApp.
+      <p style={{ marginTop: "2rem" }}>
+        <a href="/roster" style={{ color: "#60a5fa", fontSize: "1.05rem" }}>
+          Manage roster &rarr;
+        </a>
+      </p>
+      <p style={{ marginTop: "0.5rem", color: "#64748b", fontSize: "0.85rem" }}>
+        Phase 1: roster &rarr; events &rarr; event status screen &rarr; Send to
+        WhatsApp.
       </p>
     </main>
   );
