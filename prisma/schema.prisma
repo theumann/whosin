@@ -1,0 +1,102 @@
+// my-team — phase 1 schema
+// Neutral names (Group/Event) per the generalization constraint in CLAUDE.md.
+// Roles + Membership exist from day one so a 2nd/3rd coach is additive (phase 2),
+// with no migration. Player is NOT a User; players are data the coach manages.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  OWNER
+  COACH
+  ASSISTANT
+}
+
+enum EntryStatus {
+  IN
+  WAITLIST
+  INJURY
+  DEFAULT // in-app label: "Pending Answer" — hidden from published lists
+}
+
+enum Squad {
+  A
+  B
+}
+
+model User {
+  id          String       @id @default(cuid())
+  email       String       @unique
+  name        String?
+  memberships Membership[]
+  createdAt   DateTime     @default(now())
+}
+
+model Group {
+  id          String       @id @default(cuid())
+  name        String
+  memberships Membership[]
+  players     Player[]
+  events      Event[]
+  createdAt   DateTime     @default(now())
+}
+
+model Membership {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  group     Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  groupId   String
+  role      Role     @default(OWNER)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, groupId])
+}
+
+model Player {
+  id          String       @id @default(cuid())
+  group       Group        @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  groupId     String
+  firstName   String
+  phone       String
+  lastName    String?
+  email       String?
+  skillBucket String? // seed for assisted squad-shuffling later
+  injured     Boolean      @default(false) // carries as default INJURY status on new events
+  notes       String?
+  entries     EventEntry[]
+  createdAt   DateTime     @default(now())
+}
+
+model Event {
+  id         String       @id @default(cuid())
+  group      Group        @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  groupId    String
+  startsAt   DateTime
+  location   String?
+  capacity   Int? // max players; null = uncapped. Drives the "y / x in" indicator.
+  notes      String?
+  canceledAt DateTime? // set by the "Game Canceled" button
+  entries    EventEntry[]
+  createdAt  DateTime     @default(now())
+}
+
+model EventEntry {
+  id        String      @id @default(cuid())
+  event     Event       @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId   String
+  player    Player      @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  playerId  String
+  status    EntryStatus @default(DEFAULT)
+  squad     Squad? // per-event A/B split; manual in v1
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  @@unique([eventId, playerId])
+}
