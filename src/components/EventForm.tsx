@@ -1,4 +1,5 @@
 import type { Event } from "@prisma/client";
+import { DateTimeInput } from "./DateTimeInput";
 
 const fieldStyle: React.CSSProperties = {
   display: "block",
@@ -40,9 +41,8 @@ export function EventForm({
     <form action={action}>
       <label style={labelStyle}>
         Date &amp; time<span style={{ color: "#f87171" }}> *</span>
-        <input
+        <DateTimeInput
           name="startsAt"
-          type="datetime-local"
           required
           defaultValue={toLocalInput(event?.startsAt)}
           style={fieldStyle}
