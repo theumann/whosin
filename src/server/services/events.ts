@@ -1,4 +1,4 @@
-import type { EntryStatus } from "@prisma/client";
+import type { EntryStatus, Squad } from "@prisma/client";
 import { db } from "@/lib/db";
 
 // Event domain logic. Creating an event seeds one EventEntry per roster player
@@ -73,6 +73,14 @@ export function setEntryStatus(eventId: string, playerId: string, status: EntryS
   return db.eventEntry.update({
     where: { eventId_playerId: { eventId, playerId } },
     data: { status },
+  });
+}
+
+// Manual A/B squad assignment for an in-event player. null clears it.
+export function setSquad(eventId: string, playerId: string, squad: Squad | null) {
+  return db.eventEntry.update({
+    where: { eventId_playerId: { eventId, playerId } },
+    data: { squad },
   });
 }
 

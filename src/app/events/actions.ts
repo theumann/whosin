@@ -2,13 +2,14 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import type { EntryStatus } from "@prisma/client";
+import type { EntryStatus, Squad } from "@prisma/client";
 import { getCurrentGroupId } from "@/server/coach";
 import {
   createEvent,
   deleteEvent,
   setEntryStatus,
   setEventCanceled,
+  setSquad,
   updateEvent,
   validateEventInput,
   type EventInput,
@@ -68,5 +69,12 @@ export async function setStatusAction(eventId: string, playerId: string, formDat
 
 export async function setCanceledAction(eventId: string, canceled: boolean) {
   await setEventCanceled(eventId, canceled);
+  revalidatePath(`/events/${eventId}`);
+}
+
+export async function setSquadAction(eventId: string, playerId: string, formData: FormData) {
+  const raw = String(formData.get("squad") ?? "");
+  const squad: Squad | null = raw === "A" || raw === "B" ? raw : null;
+  await setSquad(eventId, playerId, squad);
   revalidatePath(`/events/${eventId}`);
 }
