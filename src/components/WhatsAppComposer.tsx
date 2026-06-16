@@ -1,20 +1,29 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { whatsappShareUrl } from "@/lib/messages";
 
 // Editable compose box: the coach can include/exclude the roster, tweak the
 // text, then one-tap share to WhatsApp (or copy). Composition logic lives in
 // lib/messages; this component only handles the interaction.
 export function WhatsAppComposer({ header, roster }: { header: string; roster: string }) {
-  const withRoster = roster ? `${header}\n\n${roster}` : header;
+  const buildText = (include: boolean) => (include && roster ? `${header}\n\n${roster}` : header);
+
   const [includeRoster, setIncludeRoster] = useState(true);
-  const [text, setText] = useState(withRoster);
+  const [text, setText] = useState(() => buildText(true));
   const [copied, setCopied] = useState(false);
+
+  // Refresh the message when the roster changes (e.g. the coach changed a
+  // player's status), keeping their include-roster choice. Any manual edits are
+  // replaced, since the underlying roster they were based on just changed.
+  useEffect(() => {
+    setText(buildText(includeRoster));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [header, roster]);
 
   function rebuild(include: boolean) {
     setIncludeRoster(include);
-    setText(include && roster ? `${header}\n\n${roster}` : header);
+    setText(buildText(include));
   }
 
   function share() {
