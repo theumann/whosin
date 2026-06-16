@@ -1,11 +1,11 @@
-import type { EntryStatus } from "@prisma/client";
+import type { EntryStatus, Squad } from "@prisma/client";
 
 // Pure WhatsApp message builders. No DB, no React — usable from server
 // components today and a future native client. Pending Answer (DEFAULT) is
 // intentionally never published.
 
 type MessagePlayer = { firstName: string; lastName: string | null };
-type MessageEntry = { status: EntryStatus; player: MessagePlayer };
+type MessageEntry = { status: EntryStatus; squad?: Squad | null; player: MessagePlayer };
 
 export type EventMessageData = {
   groupName: string;
@@ -52,6 +52,30 @@ export function buildRosterBody(d: EventMessageData): string {
     if (!players.length) continue;
     const cap = status === "IN" && d.capacity != null ? `/${d.capacity}` : "";
     lines.push(`${label} (${players.length}${cap}):`);
+    for (const e of players) lines.push(`• ${fullName(e.player)}`);
+    lines.push("");
+  }
+  return lines.join("\n").trim();
+}
+
+// Team A / Team B split among In players. Returns "" if no split is done yet
+// (no In player is assigned to a squad), which the UI uses to disable the
+// "include squad split" toggle.
+export function buildSquadBody(d: EventMessageData): string {
+  const assigned = d.entries.filter(
+    (e) => e.status === "IN" && (e.squad === "A" || e.squad === "B"),
+  );
+  if (!assigned.length) return "";
+
+  const sections: Array<[Squad, string]> = [
+    ["A", "🅰️ Team A"],
+    ["B", "🅱️ Team B"],
+  ];
+  const lines: string[] = [];
+  for (const [sq, label] of sections) {
+    const players = assigned.filter((e) => e.squad === sq);
+    if (!players.length) continue;
+    lines.push(`${label} (${players.length}):`);
     for (const e of players) lines.push(`• ${fullName(e.player)}`);
     lines.push("");
   }

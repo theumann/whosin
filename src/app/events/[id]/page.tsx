@@ -7,6 +7,7 @@ import {
   buildCanceledMessage,
   buildHeader,
   buildRosterBody,
+  buildSquadBody,
   whatsappShareUrl,
   type EventMessageData,
 } from "@/lib/messages";
@@ -65,6 +66,7 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
   };
   const headerText = buildHeader(msgData);
   const rosterBody = buildRosterBody(msgData);
+  const squadBody = buildSquadBody(msgData);
   const canceledShareUrl = whatsappShareUrl(buildCanceledMessage(msgData));
 
   return (
@@ -288,7 +290,7 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
             </a>
           </p>
         ) : null}
-        <WhatsAppComposer header={headerText} roster={rosterBody} />
+        <WhatsAppComposer header={headerText} roster={rosterBody} squad={squadBody} />
         <p style={{ color: "#64748b", fontSize: "0.8rem", marginTop: "0.6rem" }}>
           Opens WhatsApp with the message ready — pick your group and send.
         </p>
