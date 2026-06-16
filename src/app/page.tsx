@@ -6,6 +6,11 @@ export default function Home() {
         Rosters, events, and one-tap WhatsApp updates — for the coach.
       </p>
       <p style={{ marginTop: "2rem" }}>
+        <a href="/events" style={{ color: "#60a5fa", fontSize: "1.05rem" }}>
+          Events &rarr;
+        </a>
+      </p>
+      <p style={{ marginTop: "0.5rem" }}>
         <a href="/roster" style={{ color: "#60a5fa", fontSize: "1.05rem" }}>
           Manage roster &rarr;
         </a>

@@ -47,6 +47,10 @@ export default async function RosterPage({
       <h1 style={{ marginBottom: "0.25rem" }}>Roster</h1>
       <p style={{ color: "#94a3b8", marginTop: 0 }}>
         {players.length} {players.length === 1 ? "player" : "players"}
+        {" · "}
+        <Link href="/events" style={{ color: "#60a5fa" }}>
+          Events
+        </Link>
       </p>
 
       {error ? (
