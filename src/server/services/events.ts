@@ -104,6 +104,7 @@ export async function getEventWithRoster(eventId: string) {
   return db.event.findUnique({
     where: { id: eventId },
     include: {
+      group: { select: { name: true } },
       entries: {
         include: { player: true },
         orderBy: [{ player: { firstName: "asc" } }, { player: { lastName: "asc" } }],

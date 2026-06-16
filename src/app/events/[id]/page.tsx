@@ -3,6 +3,14 @@ import { notFound } from "next/navigation";
 import type { EntryStatus } from "@prisma/client";
 import { getEventWithRoster } from "@/server/services/events";
 import { STATUS_COLORS, STATUS_LABELS, STATUS_ORDER } from "@/lib/status";
+import {
+  buildCanceledMessage,
+  buildHeader,
+  buildRosterBody,
+  whatsappShareUrl,
+  type EventMessageData,
+} from "@/lib/messages";
+import { WhatsAppComposer } from "@/components/WhatsAppComposer";
 import { deleteEventAction, setCanceledAction, setStatusAction } from "../actions";
 
 export const dynamic = "force-dynamic";
@@ -29,6 +37,17 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
   );
   const inCount = counts.IN;
   const overCapacity = event.capacity != null && inCount > event.capacity;
+
+  const msgData: EventMessageData = {
+    groupName: event.group.name,
+    startsAt: event.startsAt,
+    location: event.location,
+    capacity: event.capacity,
+    entries: event.entries,
+  };
+  const headerText = buildHeader(msgData);
+  const rosterBody = buildRosterBody(msgData);
+  const canceledShareUrl = whatsappShareUrl(buildCanceledMessage(msgData));
 
   return (
     <main style={{ maxWidth: 720, margin: "0 auto", padding: "2rem 1.5rem" }}>
@@ -128,6 +147,36 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
           </li>
         ))}
       </ul>
+
+      {/* Broadcast to WhatsApp */}
+      <section style={{ marginTop: "2.5rem" }}>
+        <h2 style={{ fontSize: "1.1rem" }}>Send to WhatsApp</h2>
+        {event.canceledAt ? (
+          <p style={{ marginBottom: "1rem" }}>
+            <a
+              href={canceledShareUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: "inline-block",
+                padding: "0.55rem 1.1rem",
+                borderRadius: 6,
+                background: "#fb923c",
+                color: "#0b1220",
+                fontWeight: 700,
+                textDecoration: "none",
+                fontSize: "0.95rem",
+              }}
+            >
+              📣 Share cancellation
+            </a>
+          </p>
+        ) : null}
+        <WhatsAppComposer header={headerText} roster={rosterBody} />
+        <p style={{ color: "#64748b", fontSize: "0.8rem", marginTop: "0.6rem" }}>
+          Opens WhatsApp with the message ready — pick your group and send.
+        </p>
+      </section>
     </main>
   );
 }
