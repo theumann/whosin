@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { getCurrentGroupId } from "@/server/dev";
+import { signOut } from "@/auth";
+import { getCurrentGroupId } from "@/server/coach";
 import { listPlayers } from "@/server/services/roster";
 import { PlayerForm } from "@/components/PlayerForm";
 import { addPlayerAction, deletePlayerAction } from "./actions";
@@ -17,9 +18,32 @@ export default async function RosterPage({
 
   return (
     <main style={{ maxWidth: 720, margin: "0 auto", padding: "2rem 1.5rem" }}>
-      <Link href="/" style={{ color: "#60a5fa", fontSize: "0.85rem" }}>
-        &larr; Home
-      </Link>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <Link href="/" style={{ color: "#60a5fa", fontSize: "0.85rem" }}>
+          &larr; Home
+        </Link>
+        <form
+          action={async () => {
+            "use server";
+            await signOut({ redirectTo: "/login" });
+          }}
+        >
+          <button
+            type="submit"
+            style={{
+              background: "none",
+              border: "1px solid #334155",
+              color: "#94a3b8",
+              borderRadius: 6,
+              padding: "0.3rem 0.7rem",
+              fontSize: "0.8rem",
+              cursor: "pointer",
+            }}
+          >
+            Sign out
+          </button>
+        </form>
+      </div>
       <h1 style={{ marginBottom: "0.25rem" }}>Roster</h1>
       <p style={{ color: "#94a3b8", marginTop: 0 }}>
         {players.length} {players.length === 1 ? "player" : "players"}

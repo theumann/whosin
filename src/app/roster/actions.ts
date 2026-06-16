@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { getCurrentGroupId } from "@/server/dev";
+import { getCurrentGroupId } from "@/server/coach";
 import {
   createPlayer,
   deletePlayer,
