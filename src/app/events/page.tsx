@@ -70,6 +70,14 @@ export default async function EventsPage({
                     style={{ color: "#e2e8f0", textDecoration: "none" }}
                   >
                     <strong>{dateFmt.format(e.startsAt)}</strong>
+                    {e.seriesId ? (
+                      <span
+                        title="Part of a recurring series"
+                        style={{ marginLeft: "0.5rem", color: "#60a5fa", fontSize: "0.8rem" }}
+                      >
+                        ↻
+                      </span>
+                    ) : null}
                     {e.canceledAt ? (
                       <span style={{ marginLeft: "0.5rem", color: "#f87171", fontSize: "0.8rem" }}>
                         CANCELED
@@ -92,7 +100,7 @@ export default async function EventsPage({
 
       <section style={{ marginTop: "2rem" }}>
         <h2 style={{ fontSize: "1.1rem" }}>Create an event</h2>
-        <EventForm action={addEventAction} submitLabel="Create event" />
+        <EventForm action={addEventAction} submitLabel="Create event" allowRecurring />
       </section>
     </main>
   );

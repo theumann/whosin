@@ -83,12 +83,13 @@ model VerificationToken {
 }
 
 model Group {
-  id          String       @id @default(cuid())
+  id          String        @id @default(cuid())
   name        String
   memberships Membership[]
   players     Player[]
   events      Event[]
-  createdAt   DateTime     @default(now())
+  series      EventSeries[]
+  createdAt   DateTime      @default(now())
 }
 
 model Membership {
@@ -122,6 +123,10 @@ model Event {
   id         String       @id @default(cuid())
   group      Group        @relation(fields: [groupId], references: [id], onDelete: Cascade)
   groupId    String
+  // Recurring occurrences belong to a series; one-off events have seriesId null.
+  // SetNull (not Cascade) so deleting a series keeps past events as history.
+  series     EventSeries? @relation(fields: [seriesId], references: [id], onDelete: SetNull)
+  seriesId   String?
   startsAt   DateTime
   location   String?
   capacity   Int? // max players; null = uncapped. Drives the "y / x in" indicator.
@@ -129,6 +134,23 @@ model Event {
   canceledAt DateTime? // set by the "Game Canceled" button
   entries    EventEntry[]
   createdAt  DateTime     @default(now())
+}
+
+// A recurring schedule (e.g. "every Tuesday 7pm until Oct 31"). Occurrences are
+// materialized as Event rows up front. v1: weekly with an interval in weeks,
+// bounded by an end date.
+model EventSeries {
+  id            String   @id @default(cuid())
+  group         Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  groupId       String
+  firstStartsAt DateTime // datetime of the first occurrence (defines weekday + time)
+  endDate       DateTime // last calendar day an occurrence may fall on (inclusive)
+  intervalWeeks Int      @default(1) // 1 = weekly, 2 = every other week, ...
+  location      String?
+  capacity      Int?
+  notes         String?
+  events        Event[]
+  createdAt     DateTime @default(now())
 }
 
 model EventEntry {
