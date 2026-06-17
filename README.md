@@ -54,9 +54,10 @@ Log in: enter your email, then copy the **magic link printed in the terminal**
 | `npm run db:push` | Sync Prisma schema to the DB (no migration files) |
 | `npm run db:seed` | Reset to a known demo roster (**destructive** — wipes event statuses) |
 | `npm run db:studio` | Prisma Studio |
-| `npm test` | Run the test suite once |
-| `npm run test:watch` | Run tests in watch mode |
-| `npm run test:coverage` | Run tests + print a coverage report (HTML in `coverage/`) |
+| `npm test` | Run the unit test suite once |
+| `npm run test:watch` | Run unit tests in watch mode |
+| `npm run test:coverage` | Run unit tests + print a coverage report (HTML in `coverage/`) |
+| `npm run test:e2e` | Run Playwright end-to-end tests (auto-starts the dev server) |
 
 ## Testing strategy
 
@@ -68,7 +69,7 @@ places. We invest where bugs actually live, in order of value-per-effort:
 | `lib/` pure functions (message formatting, status labels, validation) | **Unit** (Vitest) — no DB, no browser | ✅ in place |
 | `server/services` (createEvent seeding, ensureEntries, status/squad writes) | **Integration** (Vitest + a test Postgres) | ⏳ planned |
 | Client components (`WhatsAppComposer`, `DateTimeInput`) | **Component** (Vitest + React Testing Library) | ⏳ later |
-| Full flows (login → create event → mark In → share) | **E2E** (Playwright) | ⏳ planned (before deploy) |
+| Full flows (create event → mark In → share) | **E2E** (Playwright) | ✅ in place (happy path) |
 
 ### Principles
 
@@ -92,12 +93,24 @@ Infra glue (`lib/db.ts`, layouts, route handlers) is excluded so the numbers
 reflect real logic. Per-directory thresholds can be added in
 `vitest.config.ts` once the suite stabilizes.
 
+### End-to-end (Playwright)
+
+E2E specs live in `e2e/`. `npm run test:e2e` auto-starts the dev server and runs
+against it, so a local Postgres with a synced schema is required. A global setup
+(`e2e/global-setup.ts`) provisions an **isolated** E2E coach + group + roster
+(separate from dev/seed data, reset each run) and injects a DB-backed session via
+`storageState`, so tests start authenticated without driving the magic-link UI
+(that flow is better tested in its own targeted spec later). Reports land in
+`playwright-report/` (gitignored).
+
 ### Writing tests
 
-Co-locate as `*.test.ts` next to the code (`src/lib/messages.test.ts`). Run:
+Co-locate unit tests as `*.test.ts` next to the code (`src/lib/messages.test.ts`);
+put E2E specs in `e2e/*.spec.ts`. Run:
 
 ```bash
-npm test               # once
-npm run test:watch     # watch mode while developing
-npm run test:coverage  # with coverage report
+npm test               # unit, once
+npm run test:watch     # unit, watch mode
+npm run test:coverage  # unit + coverage report
+npm run test:e2e       # end-to-end (starts the dev server)
 ```

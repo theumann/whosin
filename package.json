@@ -13,7 +13,8 @@
     "db:seed": "node prisma/seed.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "test:e2e": "playwright test"
   },
   "prisma": {
     "seed": "node prisma/seed.mjs"
@@ -28,10 +29,12 @@
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.61.0",
     "@types/node": "^22.10.5",
     "@types/react": "^19.0.2",
     "@types/react-dom": "^19.0.2",
     "@vitest/coverage-v8": "^4.1.9",
+    "dotenv": "^17.4.2",
     "prisma": "^6.2.1",
     "typescript": "^5.7.2",
     "vitest": "^4.1.9"
