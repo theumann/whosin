@@ -26,7 +26,14 @@ export default async function EditEventPage({
       <h1>Edit event</h1>
 
       {error ? (
-        <p style={{ background: "#7f1d1d", color: "#fecaca", padding: "0.6rem 0.8rem", borderRadius: 6 }}>
+        <p
+          style={{
+            background: "#7f1d1d",
+            color: "#fecaca",
+            padding: "0.6rem 0.8rem",
+            borderRadius: 6,
+          }}
+        >
           {error}
         </p>
       ) : null}

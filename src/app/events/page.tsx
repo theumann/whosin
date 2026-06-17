@@ -34,7 +34,14 @@ export default async function EventsPage({
       </p>
 
       {error ? (
-        <p style={{ background: "#7f1d1d", color: "#fecaca", padding: "0.6rem 0.8rem", borderRadius: 6 }}>
+        <p
+          style={{
+            background: "#7f1d1d",
+            color: "#fecaca",
+            padding: "0.6rem 0.8rem",
+            borderRadius: 6,
+          }}
+        >
           {error}
         </p>
       ) : null}
@@ -58,7 +65,10 @@ export default async function EventsPage({
                     gap: "0.75rem",
                   }}
                 >
-                  <Link href={`/events/${e.id}`} style={{ color: "#e2e8f0", textDecoration: "none" }}>
+                  <Link
+                    href={`/events/${e.id}`}
+                    style={{ color: "#e2e8f0", textDecoration: "none" }}
+                  >
                     <strong>{dateFmt.format(e.startsAt)}</strong>
                     {e.canceledAt ? (
                       <span style={{ marginLeft: "0.5rem", color: "#f87171", fontSize: "0.8rem" }}>

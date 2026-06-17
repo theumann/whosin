@@ -8,7 +8,7 @@ Unfiltered first-instinct thoughts before hearing the user's ideas. Opinionated 
 
 For amateur teams, the #1 weekly pain for a manager is figuring out attendance for the next training or match. WhatsApp polls and group chats fail at this constantly: replies get buried, half the team doesn't answer, the manager ends up DMing people the night before. Doodle and similar tools are too generic and too high-friction for a recurring weekly rhythm.
 
-If the app does nothing else well, it should make this *trivially* easy — both for the manager (one screen, real numbers) and the player (one tap, no login friction).
+If the app does nothing else well, it should make this _trivially_ easy — both for the manager (one screen, real numbers) and the player (one tap, no login friction).
 
 Everything else (chat, payments, lineups, stats) is built on top of attendance. Attendance is the gravity well.
 
@@ -29,7 +29,7 @@ That's the whole v1. If this part isn't great, nothing else matters.
 - **Zero-friction joining.** A player should be able to RSVP within 30 seconds of receiving the invite link, without creating a password, without installing anything. Magic link or one-time SMS code only.
 - **Notifications are sacred.** Over-notifying kills these apps. One reminder per event, maybe one digest for the manager. No "Bob updated his profile picture" garbage.
 - **The manager is the power user; the player is a tourist.** Optimize the player experience for "I open this once a week, tap one thing, close it." Optimize the manager experience for "I live in this thing on Sunday evenings."
-- **Don't over-abstract the domain yet.** The README mentions generalizing to activity groups later. Agreed *as a constraint on naming* — call things `Group` and `Event`, not `Team` and `Match` — but resist building a generic schema engine. Ship the sports-shaped MVP with neutral names.
+- **Don't over-abstract the domain yet.** The README mentions generalizing to activity groups later. Agreed _as a constraint on naming_ — call things `Group` and `Event`, not `Team` and `Match` — but resist building a generic schema engine. Ship the sports-shaped MVP with neutral names.
 
 ## Things I'd explicitly leave OUT of v1
 
@@ -81,7 +81,7 @@ Updates based on: coach is the primary user; adult amateur first but youth suppo
 
 ## The biggest shift: pick-up ≠ team
 
-The first real user doesn't have a team-management problem. He has an **event-ticketing problem**. Payment *is* the RSVP. The roster is whoever paid first. This is a meaningfully different shape from a weekly training where you ask "who's coming?"
+The first real user doesn't have a team-management problem. He has an **event-ticketing problem**. Payment _is_ the RSVP. The roster is whoever paid first. This is a meaningfully different shape from a weekly training where you ask "who's coming?"
 
 I'd model two event types from day one — same underlying primitives, distinct UX:
 
@@ -99,7 +99,7 @@ Build the **open event** flow first, because that's the actual first user. The t
 3. **Manual mark-as-paid in a fast UI.** Coach gets the Venmo push on their phone, taps a name in our app. Boring, bulletproof, ships this week.
 4. **Venmo Business profile.** Has limited APIs but requires a business setup the coach almost certainly doesn't want for a weekly pick-up.
 
-My recommendation: **v1 is manual mark-as-paid.** Optimize the *speed* of that interaction (search-as-you-type, recent-payer suggestions, one-tap toggle) rather than promising automation we can't reliably deliver. Explore option 2 (email forwarding) in v1.5 once we know the real volume and the coach is hooked.
+My recommendation: **v1 is manual mark-as-paid.** Optimize the _speed_ of that interaction (search-as-you-type, recent-payer suggestions, one-tap toggle) rather than promising automation we can't reliably deliver. Explore option 2 (email forwarding) in v1.5 once we know the real volume and the coach is hooked.
 
 Important: avoid framing this to users as "connect your Venmo." That phrase sets an expectation we'll struggle to meet. Frame it as "track payments" — manual today, smarter later.
 
@@ -133,7 +133,7 @@ US youth support adds nontrivial complexity:
 - Photos / rosters of minors create safeguarding obligations.
 - Affects auth, data model, notification routing, and UI (one parent managing multiple kids on different teams).
 
-Recommendation: design the data model so a `Member` can be **represented by** a separate `User` (parent proxy), but don't build the youth-specific flows until the adult MVP is solid. And don't *market* youth support until it's properly built — youth coaches will notice the rough edges instantly.
+Recommendation: design the data model so a `Member` can be **represented by** a separate `User` (parent proxy), but don't build the youth-specific flows until the adult MVP is solid. And don't _market_ youth support until it's properly built — youth coaches will notice the rough edges instantly.
 
 ## Revised MVP for the real first user
 
@@ -173,14 +173,14 @@ Round 2 treated payment and capacity-management as tangled — the open event wa
   - Coach marks player as paid (pick-up #1 once payment-tracking ships)
   - (Future) Some other trigger — Stripe webhook, integration, etc.
 
-This is meaningfully better than where Round 2 left things. The open-event MVP now ships *without* payment tracking, which removes the riskiest engineering work from the critical path. Payment becomes additive, not blocking.
+This is meaningfully better than where Round 2 left things. The open-event MVP now ships _without_ payment tracking, which removes the riskiest engineering work from the critical path. Payment becomes additive, not blocking.
 
 ## The three-user spectrum is a gift, not a complication
 
-| User | Shape | Confirmation | Schedule |
-|---|---|---|---|
-| Pick-up #2 | Open, capped | Player taps | Single game |
-| Pick-up #1 | Open, capped | Coach marks paid | Single game |
+| User       | Shape        | Confirmation     | Schedule                           |
+| ---------- | ------------ | ---------------- | ---------------------------------- |
+| Pick-up #2 | Open, capped | Player taps      | Single game                        |
+| Pick-up #1 | Open, capped | Coach marks paid | Single game                        |
 | Adult team | Fixed roster | Yes / No / Maybe | Recurring practice + game calendar |
 
 Three users at three points on the structure spectrum is the ideal validation lineup. They share enough that one engine serves all of them; they differ enough that premature abstractions show up immediately. The biggest risk is trying to please all three at once and shipping nothing — so the sequencing matters.
@@ -196,14 +196,16 @@ Each phase has a real user waiting at the end of it — the best possible forcin
 
 ## Watchout
 
-Resist building team features in parallel "because we know they're coming." Pick-up #2 will surface 80% of the bugs and UX questions the team would hit anyway. Roster/RSVP/recurring-event design gets cleaner once the open-event flow has been stress-tested by real users. Knowing the team is coming should influence the *data model* (don't paint yourself into a corner) but not the *build order*.
+Resist building team features in parallel "because we know they're coming." Pick-up #2 will surface 80% of the bugs and UX questions the team would hit anyway. Roster/RSVP/recurring-event design gets cleaner once the open-event flow has been stress-tested by real users. Knowing the team is coming should influence the _data model_ (don't paint yourself into a corner) but not the _build order_.
 
 ## What's now de-risked vs. still risky
 
 **De-risked:**
+
 - The MVP no longer hinges on payment tracking. The technically thorniest piece moves to phase 2.
 - Two pick-up users using the same flow means UX questions get validated quickly without needing to balance two product shapes at once.
 
 **Still risky:**
+
 - The team flow is a real product shift (fixed roster, RSVPs vs. confirmations, recurring events, separate game calendar). The data model needs to accommodate it from the start without prematurely building it.
 - Venmo tracking is still the hardest engineering bet in the roadmap. Phase 2 should start with the realistic options laid out in Round 2 (manual mark-as-paid as the floor, email-forwarding parsing as the stretch).

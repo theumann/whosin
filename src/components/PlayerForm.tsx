@@ -63,17 +63,33 @@ export function PlayerForm({
   return (
     <form action={action}>
       <Field name="firstName" label="First name" defaultValue={player?.firstName} required />
-      <Field name="phone" label="Phone / WhatsApp" defaultValue={player?.phone} required placeholder="+1 555 123 4567" />
+      <Field
+        name="phone"
+        label="Phone / WhatsApp"
+        defaultValue={player?.phone}
+        required
+        placeholder="+1 555 123 4567"
+      />
       <Field name="lastName" label="Last name" defaultValue={player?.lastName} />
       <Field name="email" label="Email" type="email" defaultValue={player?.email} />
-      <Field name="skillBucket" label="Skill / style bucket" defaultValue={player?.skillBucket} placeholder="e.g. A, defender, beginner" />
+      <Field
+        name="skillBucket"
+        label="Skill / style bucket"
+        defaultValue={player?.skillBucket}
+        placeholder="e.g. A, defender, beginner"
+      />
       <label style={{ ...labelStyle, display: "flex", alignItems: "center", gap: "0.5rem" }}>
         <input name="injured" type="checkbox" defaultChecked={player?.injured ?? false} />
         Injured (defaults to Injury Reserve on new events)
       </label>
       <label style={labelStyle}>
         Notes
-        <textarea name="notes" defaultValue={player?.notes ?? ""} rows={2} style={{ ...fieldStyle, resize: "vertical" }} />
+        <textarea
+          name="notes"
+          defaultValue={player?.notes ?? ""}
+          rows={2}
+          style={{ ...fieldStyle, resize: "vertical" }}
+        />
       </label>
       <button
         type="submit"

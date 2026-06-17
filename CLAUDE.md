@@ -16,15 +16,15 @@ Early-stage / not yet implemented. The project directory is empty; tech stack, a
 
 Three real users lined up to test the app, spanning the structure spectrum from least to most structured:
 
-| User | Shape | Confirmation | Schedule |
-|---|---|---|---|
-| Pick-up group #2 | Open event, capacity-capped, waitlist | Player taps "I'm in" | Single game |
-| Pick-up group #1 | Open event, capacity-capped, waitlist | Coach marks Venmo paid | Single game |
-| Adult amateur team | Fixed roster | Yes / No / Maybe RSVP | Recurring practice + game calendar |
+| User               | Shape                                 | Confirmation           | Schedule                           |
+| ------------------ | ------------------------------------- | ---------------------- | ---------------------------------- |
+| Pick-up group #2   | Open event, capacity-capped, waitlist | Player taps "I'm in"   | Single game                        |
+| Pick-up group #1   | Open event, capacity-capped, waitlist | Coach marks Venmo paid | Single game                        |
+| Adult amateur team | Fixed roster                          | Yes / No / Maybe RSVP  | Recurring practice + game calendar |
 
 The two pick-up groups will likely be the first users; the team is queued behind them.
 
-**Key abstraction this lineup reveals:** payment is one *type* of confirmation, not a prerequisite of the open-event flow. The core primitive is "a confirmation takes a slot." A confirmation can be a player tap, a coach-marked Venmo payment, or (later) something else. This decouples payment tracking from the open-event MVP — payment becomes an additive layer, not a blocker.
+**Key abstraction this lineup reveals:** payment is one _type_ of confirmation, not a prerequisite of the open-event flow. The core primitive is "a confirmation takes a slot." A confirmation can be a player tap, a coach-marked Venmo payment, or (later) something else. This decouples payment tracking from the open-event MVP — payment becomes an additive layer, not a blocker.
 
 **Build sequence:**
 
@@ -52,7 +52,7 @@ The mental model: the app is what WhatsApp would be if WhatsApp could do rosters
 
 ### Keep the native-app door open — don't build deeply server-rendered pages
 
-We're starting as a web-first PWA (Next.js). A PWA can later be wrapped in a native shell (e.g. Capacitor) or backed by a true native client **with little to no rewrite** — *as long as we keep a clean API boundary*. The one thing that would lock us into web-only is tangling all logic into deeply server-rendered HTML that assumes the server is always one hop away.
+We're starting as a web-first PWA (Next.js). A PWA can later be wrapped in a native shell (e.g. Capacitor) or backed by a true native client **with little to no rewrite** — _as long as we keep a clean API boundary_. The one thing that would lock us into web-only is tangling all logic into deeply server-rendered HTML that assumes the server is always one hop away.
 
 **Rule:** keep the data layer behind a clean API (route handlers / server actions that a future native client could also call). Do **not** build deeply server-rendered pages that bury business logic in page rendering. This costs nothing now and preserves the native path (PWA-forever, Capacitor wrap, or native client) for later.
 

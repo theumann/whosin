@@ -12,12 +12,7 @@ import {
   type EventMessageData,
 } from "@/lib/messages";
 import { WhatsAppComposer } from "@/components/WhatsAppComposer";
-import {
-  deleteEventAction,
-  setCanceledAction,
-  setSquadAction,
-  setStatusAction,
-} from "../actions";
+import { deleteEventAction, setCanceledAction, setSquadAction, setStatusAction } from "../actions";
 
 export const dynamic = "force-dynamic";
 
@@ -92,7 +87,13 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
           margin: "1rem 0",
         }}
       >
-        <span style={{ fontSize: "1.4rem", fontWeight: 700, color: overCapacity ? "#f87171" : "#22c55e" }}>
+        <span
+          style={{
+            fontSize: "1.4rem",
+            fontWeight: 700,
+            color: overCapacity ? "#f87171" : "#22c55e",
+          }}
+        >
           {inCount}
           {event.capacity != null ? ` / ${event.capacity}` : ""} in
         </span>
@@ -201,7 +202,10 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
                   </span>
                 ) : null}
               </span>
-              <form action={setStatusAction.bind(null, event.id, entry.playerId)} style={{ display: "flex", gap: "0.3rem" }}>
+              <form
+                action={setStatusAction.bind(null, event.id, entry.playerId)}
+                style={{ display: "flex", gap: "0.3rem" }}
+              >
                 {STATUS_ORDER.map((s) => {
                   const active = entry.status === s;
                   return (
@@ -232,9 +236,16 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
             {entry.status === "IN" ? (
               <form
                 action={setSquadAction.bind(null, event.id, entry.playerId)}
-                style={{ display: "flex", alignItems: "center", gap: "0.3rem", marginTop: "0.4rem" }}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.3rem",
+                  marginTop: "0.4rem",
+                }}
               >
-                <span style={{ color: "#64748b", fontSize: "0.75rem", marginRight: "0.2rem" }}>Team:</span>
+                <span style={{ color: "#64748b", fontSize: "0.75rem", marginRight: "0.2rem" }}>
+                  Team:
+                </span>
                 {SQUAD_OPTIONS.map((opt) => {
                   const active =
                     (opt.value === "" && entry.squad == null) || entry.squad === opt.value;

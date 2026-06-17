@@ -12,15 +12,41 @@ const GROUP_NAME = "Thursday Night Soccer";
 const PLAYERS = [
   { firstName: "Marco", lastName: "Rossi", phone: "+15550100", skillBucket: "A", notes: "Captain" },
   { firstName: "James", lastName: "Okafor", phone: "+15550101", skillBucket: "A" },
-  { firstName: "Diego", lastName: "Hernandez", phone: "+15550102", skillBucket: "A", email: "diego@example.com" },
+  {
+    firstName: "Diego",
+    lastName: "Hernandez",
+    phone: "+15550102",
+    skillBucket: "A",
+    email: "diego@example.com",
+  },
   { firstName: "Liam", lastName: "Murphy", phone: "+15550103", skillBucket: "B" },
   { firstName: "Noah", lastName: "Andersson", phone: "+15550104", skillBucket: "B" },
   { firstName: "Yuki", lastName: "Tanaka", phone: "+15550105", skillBucket: "B" },
-  { firstName: "Sam", lastName: "Cohen", phone: "+15550106", skillBucket: "B", injured: true, notes: "Ankle — out a few weeks" },
+  {
+    firstName: "Sam",
+    lastName: "Cohen",
+    phone: "+15550106",
+    skillBucket: "B",
+    injured: true,
+    notes: "Ankle — out a few weeks",
+  },
   { firstName: "Omar", lastName: "Haddad", phone: "+15550107", skillBucket: "C" },
   { firstName: "Tom", lastName: "Becker", phone: "+15550108", skillBucket: "C" },
-  { firstName: "Raj", lastName: "Patel", phone: "+15550109", skillBucket: "C", email: "raj@example.com" },
-  { firstName: "Kevin", lastName: "Nguyen", phone: "+15550110", skillBucket: "C", injured: true, notes: "Knee" },
+  {
+    firstName: "Raj",
+    lastName: "Patel",
+    phone: "+15550109",
+    skillBucket: "C",
+    email: "raj@example.com",
+  },
+  {
+    firstName: "Kevin",
+    lastName: "Nguyen",
+    phone: "+15550110",
+    skillBucket: "C",
+    injured: true,
+    notes: "Knee",
+  },
   { firstName: "Andre", lastName: "Silva", phone: "+15550111", skillBucket: "A" },
 ];
 
@@ -55,7 +81,9 @@ async function main() {
   });
 
   const count = await db.player.count({ where: { groupId } });
-  console.log(`Seeded coach ${COACH_EMAIL} + group "${membership.group.name}" with ${count} players.`);
+  console.log(
+    `Seeded coach ${COACH_EMAIL} + group "${membership.group.name}" with ${count} players.`,
+  );
 }
 
 main()
