@@ -7,6 +7,16 @@
 .env
 .env*.local
 
+# test coverage
+/coverage
+
+# playwright
+/test-results
+/playwright-report
+/blob-report
+/playwright/.cache
+/e2e/.auth
+
 # misc
 *.log
 .DS_Store
