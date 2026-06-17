@@ -25,9 +25,7 @@ const base: EventMessageData = {
 
 describe("buildHeader", () => {
   it("includes group, formatted date, and location", () => {
-    expect(buildHeader(base)).toBe(
-      "Thursday Night Soccer — Thu, Jun 25, 7:00 PM @ Riverside Park",
-    );
+    expect(buildHeader(base)).toBe("Thursday Night Soccer — Thu, Jun 25, 7:00 PM @ Riverside Park");
   });
 
   it("omits the location separator when there is no location", () => {
@@ -95,11 +93,7 @@ describe("buildSquadBody", () => {
   it("builds Team A and Team B from assigned In players", () => {
     const body = buildSquadBody({
       ...base,
-      entries: [
-        entry("Marco", "IN", "A"),
-        entry("James", "IN", "A"),
-        entry("Tom", "IN", "B"),
-      ],
+      entries: [entry("Marco", "IN", "A"), entry("James", "IN", "A"), entry("Tom", "IN", "B")],
     });
     expect(body).toContain("🅰️ Team A (2):");
     expect(body).toContain("• Marco");

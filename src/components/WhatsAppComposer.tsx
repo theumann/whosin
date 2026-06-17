@@ -72,7 +72,9 @@ export function WhatsAppComposer({
         />
         Include event roster
       </label>
-      <label style={{ ...checkboxRow, color: squad ? "#cbd5e1" : "#64748b", marginBottom: "0.6rem" }}>
+      <label
+        style={{ ...checkboxRow, color: squad ? "#cbd5e1" : "#64748b", marginBottom: "0.6rem" }}
+      >
         <input
           type="checkbox"
           checked={includeSquad && Boolean(squad)}

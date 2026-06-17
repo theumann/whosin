@@ -47,34 +47,45 @@ Log in: enter your email, then copy the **magic link printed in the terminal**
 
 ### Useful scripts
 
-| Script | What it does |
-|---|---|
-| `npm run dev` | Start the dev server |
-| `npm run build` | Production build |
-| `npm run db:push` | Sync Prisma schema to the DB (no migration files) |
-| `npm run db:seed` | Reset to a known demo roster (**destructive** — wipes event statuses) |
-| `npm run db:studio` | Prisma Studio |
-| `npm test` | Run the unit test suite once |
-| `npm run test:watch` | Run unit tests in watch mode |
-| `npm run test:coverage` | Run unit tests + print a coverage report (HTML in `coverage/`) |
-| `npm run test:e2e` | Run Playwright end-to-end tests (auto-starts the dev server) |
+| Script                  | What it does                                                          |
+| ----------------------- | --------------------------------------------------------------------- |
+| `npm run dev`           | Start the dev server                                                  |
+| `npm run build`         | Production build                                                      |
+| `npm run db:push`       | Sync Prisma schema to the DB (no migration files)                     |
+| `npm run db:seed`       | Reset to a known demo roster (**destructive** — wipes event statuses) |
+| `npm run db:studio`     | Prisma Studio                                                         |
+| `npm run lint`          | ESLint — code quality                                                 |
+| `npm run format`        | Prettier — auto-format all files                                      |
+| `npm run format:check`  | Prettier — check formatting without writing                           |
+| `npm test`              | Run the unit test suite once                                          |
+| `npm run test:watch`    | Run unit tests in watch mode                                          |
+| `npm run test:coverage` | Run unit tests + print a coverage report (HTML in `coverage/`)        |
+| `npm run test:e2e`      | Run Playwright end-to-end tests (auto-starts the dev server)          |
+
+## Code style
+
+**ESLint** (code quality) and **Prettier** (formatting) are complementary, not
+overlapping: ESLint catches bugs and bad patterns (unused vars, `<a>` for
+internal links, hook deps), Prettier owns layout (indentation, quotes, width).
+`eslint-config-prettier` disables ESLint's formatting rules so the two never
+fight. Run `npm run format` before committing; `npm run lint` enforces quality.
 
 ## Testing strategy
 
 Our layered design concentrates the valuable logic in pure, easily-tested
 places. We invest where bugs actually live, in order of value-per-effort:
 
-| Layer | Test type | Status |
-|---|---|---|
-| `lib/` pure functions (message formatting, status labels, validation) | **Unit** (Vitest) — no DB, no browser | ✅ in place |
-| `server/services` (createEvent seeding, ensureEntries, status/squad writes) | **Integration** (Vitest + a test Postgres) | ⏳ planned |
-| Client components (`WhatsAppComposer`, `DateTimeInput`) | **Component** (Vitest + React Testing Library) | ⏳ later |
-| Full flows (create event → mark In → share) | **E2E** (Playwright) | ✅ in place (happy path) |
+| Layer                                                                       | Test type                                      | Status                   |
+| --------------------------------------------------------------------------- | ---------------------------------------------- | ------------------------ |
+| `lib/` pure functions (message formatting, status labels, validation)       | **Unit** (Vitest) — no DB, no browser          | ✅ in place              |
+| `server/services` (createEvent seeding, ensureEntries, status/squad writes) | **Integration** (Vitest + a test Postgres)     | ⏳ planned               |
+| Client components (`WhatsAppComposer`, `DateTimeInput`)                     | **Component** (Vitest + React Testing Library) | ⏳ later                 |
+| Full flows (create event → mark In → share)                                 | **E2E** (Playwright)                           | ✅ in place (happy path) |
 
 ### Principles
 
 - **Pure logic first.** `lib/messages.ts` builds what gets broadcast to real
-  people; it's critical *and* trivial to test (no mocking). Most real bugs so
+  people; it's critical _and_ trivial to test (no mocking). Most real bugs so
   far have been in formatting/state, not infrastructure.
 - **Deterministic dates.** `vitest.setup.ts` pins `TZ=UTC` so date formatting in
   tests is stable across machines/CI.
