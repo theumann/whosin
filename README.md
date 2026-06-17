@@ -56,6 +56,7 @@ Log in: enter your email, then copy the **magic link printed in the terminal**
 | `npm run db:studio` | Prisma Studio |
 | `npm test` | Run the test suite once |
 | `npm run test:watch` | Run tests in watch mode |
+| `npm run test:coverage` | Run tests + print a coverage report (HTML in `coverage/`) |
 
 ## Testing strategy
 
@@ -81,11 +82,22 @@ places. We invest where bugs actually live, in order of value-per-effort:
 - **Defer service-integration tests until the schema settles**, to avoid
   rewriting them as the data model evolves (recurring events, etc.).
 
+### Coverage
+
+We rely on **automated coverage** rather than a hand-maintained tally (which
+drifts). `npm run test:coverage` prints a per-file table and writes an HTML
+report to `coverage/` (gitignored). Today `src/lib` is well covered and the
+other layers read as gaps — accurate, since their tests are still planned.
+Infra glue (`lib/db.ts`, layouts, route handlers) is excluded so the numbers
+reflect real logic. Per-directory thresholds can be added in
+`vitest.config.ts` once the suite stabilizes.
+
 ### Writing tests
 
 Co-locate as `*.test.ts` next to the code (`src/lib/messages.test.ts`). Run:
 
 ```bash
-npm test            # once
-npm run test:watch  # watch mode while developing
+npm test               # once
+npm run test:watch     # watch mode while developing
+npm run test:coverage  # with coverage report
 ```
