@@ -1,14 +1,5 @@
-/* Make the native date/time picker icon visible on our dark inputs.
-   By default Chrome renders the calendar indicator in black, which is
-   invisible against the dark field background. */
-input[type="datetime-local"]::-webkit-calendar-picker-indicator,
-input[type="date"]::-webkit-calendar-picker-indicator,
-input[type="time"]::-webkit-calendar-picker-indicator {
-  filter: invert(1);
-  cursor: pointer;
-  opacity: 0.7;
-}
+@import "tailwindcss";
 
-input[type="datetime-local"]::-webkit-calendar-picker-indicator:hover {
-  opacity: 1;
+@theme {
+  --font-sans: var(--font-inter), system-ui, -apple-system, sans-serif;
 }

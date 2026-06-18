@@ -7,12 +7,12 @@ export function DateTimeInput({
   name,
   defaultValue,
   required,
-  style,
+  className,
 }: {
   name: string;
   defaultValue?: string;
   required?: boolean;
-  style?: React.CSSProperties;
+  className?: string;
 }) {
   function openPicker(e: React.MouseEvent<HTMLInputElement>) {
     const el = e.currentTarget;
@@ -32,7 +32,7 @@ export function DateTimeInput({
       required={required}
       defaultValue={defaultValue}
       onClick={openPicker}
-      style={style}
+      className={className}
     />
   );
 }

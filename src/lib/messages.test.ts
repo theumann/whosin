@@ -95,9 +95,9 @@ describe("buildSquadBody", () => {
       ...base,
       entries: [entry("Marco", "IN", "A"), entry("James", "IN", "A"), entry("Tom", "IN", "B")],
     });
-    expect(body).toContain("🅰️ Team A (2):");
+    expect(body).toContain("🔵 Team A (2):");
     expect(body).toContain("• Marco");
-    expect(body).toContain("🅱️ Team B (1):");
+    expect(body).toContain("🟣 Team B (1):");
     expect(body).toContain("• Tom");
   });
 

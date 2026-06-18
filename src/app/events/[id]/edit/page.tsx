@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
 import { getEvent } from "@/server/services/events";
 import { EventForm } from "@/components/EventForm";
 import { updateEventAction } from "../../actions";
+import { errorBanner, linkAccent } from "@/lib/ui";
 
 export const dynamic = "force-dynamic";
 
@@ -19,24 +21,16 @@ export default async function EditEventPage({
   if (!event) notFound();
 
   return (
-    <main style={{ maxWidth: 720, margin: "0 auto", padding: "2rem 1.5rem" }}>
-      <Link href={`/events/${event.id}`} style={{ color: "#60a5fa", fontSize: "0.85rem" }}>
-        &larr; Back to event
+    <main className="mx-auto max-w-2xl px-6 py-8">
+      <Link
+        href={`/events/${event.id}`}
+        className={`inline-flex items-center gap-1 text-sm ${linkAccent}`}
+      >
+        <ArrowLeft size={16} /> Back to event
       </Link>
-      <h1>Edit event</h1>
+      <h1 className="text-2xl font-bold">Edit event</h1>
 
-      {error ? (
-        <p
-          style={{
-            background: "#7f1d1d",
-            color: "#fecaca",
-            padding: "0.6rem 0.8rem",
-            borderRadius: 6,
-          }}
-        >
-          {error}
-        </p>
-      ) : null}
+      {error ? <p className={`${errorBanner} mb-4`}>{error}</p> : null}
 
       <EventForm
         action={updateEventAction.bind(null, event.id)}

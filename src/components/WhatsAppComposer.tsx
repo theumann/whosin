@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Copy, MessageCircle } from "lucide-react";
 import { whatsappShareUrl } from "@/lib/messages";
+import { btnSecondary, btnSuccess, fieldClass } from "@/lib/ui";
 
 // Editable compose box: the coach can include/exclude the roster and the squad
 // split, tweak the text, then one-tap share to WhatsApp (or copy). Composition
@@ -52,18 +54,9 @@ export function WhatsAppComposer({
     setTimeout(() => setCopied(false), 1500);
   }
 
-  const checkboxRow: React.CSSProperties = {
-    display: "flex",
-    alignItems: "center",
-    gap: "0.5rem",
-    color: "#cbd5e1",
-    fontSize: "0.85rem",
-    marginBottom: "0.4rem",
-  };
-
   return (
     <div>
-      <label style={checkboxRow}>
+      <label className="mb-1.5 flex items-center gap-2 text-sm text-slate-700">
         <input
           type="checkbox"
           checked={includeRoster}
@@ -73,7 +66,7 @@ export function WhatsAppComposer({
         Include event roster
       </label>
       <label
-        style={{ ...checkboxRow, color: squad ? "#cbd5e1" : "#64748b", marginBottom: "0.6rem" }}
+        className={`mb-2.5 flex items-center gap-2 text-sm ${squad ? "text-slate-700" : "text-slate-400"}`}
       >
         <input
           type="checkbox"
@@ -87,51 +80,14 @@ export function WhatsAppComposer({
         value={text}
         onChange={(e) => setText(e.target.value)}
         rows={12}
-        style={{
-          display: "block",
-          width: "100%",
-          boxSizing: "border-box",
-          padding: "0.6rem",
-          borderRadius: 6,
-          border: "1px solid #334155",
-          background: "#0b1220",
-          color: "#e2e8f0",
-          fontSize: "0.9rem",
-          fontFamily: "inherit",
-          resize: "vertical",
-        }}
+        className={`${fieldClass} resize-y font-sans`}
       />
-      <div style={{ display: "flex", gap: "0.6rem", marginTop: "0.6rem", alignItems: "center" }}>
-        <button
-          type="button"
-          onClick={share}
-          style={{
-            padding: "0.55rem 1.1rem",
-            borderRadius: 6,
-            border: "none",
-            background: "#22c55e",
-            color: "#0b1220",
-            fontWeight: 700,
-            fontSize: "0.95rem",
-            cursor: "pointer",
-          }}
-        >
-          Share to WhatsApp
+      <div className="mt-2.5 flex items-center gap-2.5">
+        <button type="button" onClick={share} className={btnSuccess}>
+          <MessageCircle size={16} /> Share to WhatsApp
         </button>
-        <button
-          type="button"
-          onClick={copy}
-          style={{
-            padding: "0.55rem 1rem",
-            borderRadius: 6,
-            border: "1px solid #334155",
-            background: "transparent",
-            color: "#94a3b8",
-            fontSize: "0.9rem",
-            cursor: "pointer",
-          }}
-        >
-          {copied ? "Copied!" : "Copy"}
+        <button type="button" onClick={copy} className={btnSecondary}>
+          <Copy size={14} /> {copied ? "Copied!" : "Copy"}
         </button>
       </div>
     </div>

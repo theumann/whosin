@@ -11,6 +11,7 @@ and broadcasts to the group's existing WhatsApp chat with one tap. See
 - **Next.js** (App Router) + TypeScript, as a PWA
 - **Postgres** via **Prisma**
 - **Auth.js (NextAuth v5)** — magic-link email (logged to console in dev)
+- **Tailwind CSS v4** for styling, **lucide-react** for icons
 - **Vitest** for unit tests
 - Hosting: Railway (planned)
 
@@ -23,10 +24,10 @@ business logic in server-rendered pages.
 ```
 src/
   app/          routes: pages (UI) + route handlers + thin server actions
-  components/   reusable UI (PlayerForm, EventForm, WhatsAppComposer, ...)
+  components/   reusable UI (PlayerForm, EventForm, WhatsAppComposer, BottomNav, ...)
   server/       backend: coach/group resolution + domain services
     services/   the real logic (roster.ts, events.ts)
-  lib/          shared, pure: db client, messages.ts, status.ts
+  lib/          shared, pure: db client, messages.ts, status.ts, squad.ts, ui.ts
 ```
 
 The rule: route handlers / server actions stay thin and delegate to
