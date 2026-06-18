@@ -148,6 +148,24 @@ use it without this), 🟡 = needed for a credible launch, ⚪ = nice-to-have.
 - [ ] Confirm the app runs as a long-lived Node server (it does) — Prisma
       connection pooling is fine, no serverless adapter needed.
 
+> **Working across two Railway accounts** (this project vs. the partner's
+> project, under the same GitHub account). The risk is _deploying into the wrong
+> Railway account_, not GitHub or Claude getting confused.
+>
+> - **Use a separate browser** for each Railway account (dashboard sessions are
+>   browser-scoped, so they don't interfere).
+> - **GitHub doesn't pick the account** — the Railway dashboard you're logged
+>   into does. Create the whosin service while in _your_ account's dashboard.
+> - **Scope the Railway GitHub App to "Only select repositories" → just the
+>   whosin repo** when authorizing. Then the other Railway account can't even see
+>   this repo (and vice versa) — the strongest guarantee.
+> - **Avoid the global `railway` CLI** (its token is account-wide, not
+>   browser-scoped). Prefer the dashboard. If you must use the CLI or CI, use a
+>   **project-scoped `RAILWAY_TOKEN`**, which can't touch any other project or
+>   account. Run `railway whoami` before any CLI action.
+> - **Claude has no Railway connection** — it only touches Railway if you ask it
+>   to run a `railway` CLI command, so dashboard-only work keeps it out entirely.
+
 ### 2. Production database 🔴
 
 - [ ] Provision **Railway Postgres**; copy its `DATABASE_URL` into the app
