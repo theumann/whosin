@@ -12,7 +12,13 @@ import {
   type EventMessageData,
 } from "@/lib/messages";
 import { WhatsAppComposer } from "@/components/WhatsAppComposer";
-import { deleteEventAction, setCanceledAction, setSquadAction, setStatusAction } from "../actions";
+import {
+  deleteEventAction,
+  deleteSeriesAction,
+  setCanceledAction,
+  setSquadAction,
+  setStatusAction,
+} from "../actions";
 
 export const dynamic = "force-dynamic";
 
@@ -70,7 +76,17 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
         &larr; Events
       </Link>
 
-      <h1 style={{ marginBottom: "0.25rem" }}>{dateFmt.format(event.startsAt)}</h1>
+      <h1 style={{ marginBottom: "0.25rem" }}>
+        {dateFmt.format(event.startsAt)}
+        {event.seriesId ? (
+          <span
+            title="Part of a recurring series"
+            style={{ marginLeft: "0.6rem", color: "#60a5fa", fontSize: "0.9rem", fontWeight: 400 }}
+          >
+            ↻ recurring
+          </span>
+        ) : null}
+      </h1>
       {event.canceledAt ? (
         <p style={{ color: "#f87171", fontWeight: 600, marginTop: 0 }}>CANCELED</p>
       ) : null}
@@ -119,6 +135,13 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
             Delete event
           </button>
         </form>
+        {event.seriesId ? (
+          <form action={deleteSeriesAction.bind(null, event.seriesId)}>
+            <button type="submit" style={linkButton("#f87171")}>
+              Delete series (future events)
+            </button>
+          </form>
+        ) : null}
       </div>
 
       {/* Squad split summary */}

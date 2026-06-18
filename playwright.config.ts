@@ -9,6 +9,9 @@ export default defineConfig({
   globalSetup: "./e2e/global-setup.ts",
   timeout: 30_000,
   fullyParallel: false,
+  // One worker: E2E specs share a single DB-backed E2E group, so run serially
+  // to avoid cross-test interference.
+  workers: 1,
   use: {
     baseURL: "http://localhost:3000",
     storageState: "./e2e/.auth/state.json",

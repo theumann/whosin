@@ -32,10 +32,12 @@ export function EventForm({
   action,
   event,
   submitLabel,
+  allowRecurring = false,
 }: {
   action: (formData: FormData) => void;
   event?: Event | null;
   submitLabel: string;
+  allowRecurring?: boolean;
 }) {
   return (
     <form action={action}>
@@ -77,6 +79,43 @@ export function EventForm({
           style={{ ...fieldStyle, resize: "vertical" }}
         />
       </label>
+
+      {allowRecurring ? (
+        <fieldset
+          style={{
+            border: "1px solid #334155",
+            borderRadius: 8,
+            padding: "0.75rem 0.9rem",
+            marginBottom: "1rem",
+          }}
+        >
+          <legend style={{ color: "#94a3b8", fontSize: "0.8rem", padding: "0 0.4rem" }}>
+            Repeat
+          </legend>
+          <label
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "0.5rem",
+              color: "#cbd5e1",
+              fontSize: "0.85rem",
+              marginBottom: "0.75rem",
+            }}
+          >
+            <input name="recurring" type="checkbox" />
+            Repeat this event (uses the date &amp; time above as the first occurrence)
+          </label>
+          <label style={labelStyle}>
+            Every N weeks
+            <input name="intervalWeeks" type="number" min={1} defaultValue={1} style={fieldStyle} />
+          </label>
+          <label style={labelStyle}>
+            Repeat until (end date)
+            <input name="endDate" type="date" style={fieldStyle} />
+          </label>
+        </fieldset>
+      ) : null}
+
       <button
         type="submit"
         style={{
