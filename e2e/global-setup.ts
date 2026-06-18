@@ -39,8 +39,9 @@ export default async function globalSetup() {
     }
     const groupId = membership.groupId;
 
-    // Clean slate each run.
+    // Clean slate each run (events before series; players last).
     await db.event.deleteMany({ where: { groupId } });
+    await db.eventSeries.deleteMany({ where: { groupId } });
     await db.player.deleteMany({ where: { groupId } });
     await db.player.createMany({ data: PLAYERS.map((p) => ({ ...p, groupId })) });
 
