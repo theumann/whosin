@@ -33,6 +33,17 @@ export function listEvents(groupId: string) {
   });
 }
 
+// Next N events from now, for the Home page preview. Excludes canceled
+// events — a canceled game isn't useful to surface as "what's coming up".
+export function listUpcomingEvents(groupId: string, limit: number) {
+  return db.event.findMany({
+    where: { groupId, startsAt: { gte: new Date() }, canceledAt: null },
+    orderBy: { startsAt: "asc" },
+    take: limit,
+    include: { entries: { select: { status: true } } },
+  });
+}
+
 export async function createEvent(groupId: string, input: EventInput) {
   const event = await db.event.create({
     data: {

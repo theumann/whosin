@@ -1,9 +1,11 @@
 import Link from "next/link";
+import { House, LogOut, Pencil, Trash2 } from "lucide-react";
 import { signOut } from "@/auth";
 import { getCurrentGroupId } from "@/server/coach";
 import { listPlayers } from "@/server/services/roster";
 import { PlayerForm } from "@/components/PlayerForm";
 import { addPlayerAction, deletePlayerAction } from "./actions";
+import { btnDanger, btnSecondary, errorBanner, linkAccent } from "@/lib/ui";
 
 export const dynamic = "force-dynamic";
 
@@ -17,10 +19,10 @@ export default async function RosterPage({
   const players = await listPlayers(groupId);
 
   return (
-    <main style={{ maxWidth: 720, margin: "0 auto", padding: "2rem 1.5rem" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <Link href="/" style={{ color: "#60a5fa", fontSize: "0.85rem" }}>
-          &larr; Home
+    <main className="mx-auto max-w-2xl px-6 py-8">
+      <div className="flex items-center justify-between">
+        <Link href="/" aria-label="Home" className={`inline-flex items-center ${linkAccent}`}>
+          <House size={20} />
         </Link>
         <form
           action={async () => {
@@ -28,93 +30,50 @@ export default async function RosterPage({
             await signOut({ redirectTo: "/login" });
           }}
         >
-          <button
-            type="submit"
-            style={{
-              background: "none",
-              border: "1px solid #334155",
-              color: "#94a3b8",
-              borderRadius: 6,
-              padding: "0.3rem 0.7rem",
-              fontSize: "0.8rem",
-              cursor: "pointer",
-            }}
-          >
-            Sign out
+          <button type="submit" className={`${btnSecondary} px-2.5 py-1 text-xs`}>
+            <LogOut size={14} /> Sign out
           </button>
         </form>
       </div>
-      <h1 style={{ marginBottom: "0.25rem" }}>Roster</h1>
-      <p style={{ color: "#94a3b8", marginTop: 0 }}>
+      <h1 className="mb-1 text-2xl font-bold">Roster</h1>
+      <p className="mt-0 text-slate-500">
         {players.length} {players.length === 1 ? "player" : "players"}
         {" · "}
-        <Link href="/events" style={{ color: "#60a5fa" }}>
+        <Link href="/events" className={linkAccent}>
           Events
         </Link>
       </p>
 
-      {error ? (
-        <p
-          style={{
-            background: "#7f1d1d",
-            color: "#fecaca",
-            padding: "0.6rem 0.8rem",
-            borderRadius: 6,
-          }}
-        >
-          {error}
-        </p>
-      ) : null}
+      {error ? <p className={`${errorBanner} mt-4`}>{error}</p> : null}
 
-      <section style={{ marginTop: "1.5rem" }}>
+      <section className="mt-6">
         {players.length === 0 ? (
-          <p style={{ color: "#64748b" }}>No players yet. Add your first below.</p>
+          <p className="text-slate-400">No players yet. Add your first below.</p>
         ) : (
-          <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+          <ul className="m-0 list-none p-0">
             {players.map((p) => (
               <li
                 key={p.id}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  gap: "0.75rem",
-                  padding: "0.6rem 0",
-                  borderBottom: "1px solid #1e293b",
-                }}
+                className="flex items-center justify-between gap-3 border-b border-slate-200 py-2.5"
               >
                 <div>
                   <strong>
                     {p.firstName}
                     {p.lastName ? ` ${p.lastName}` : ""}
                   </strong>
-                  {p.injured ? (
-                    <span style={{ marginLeft: "0.5rem", color: "#fb923c", fontSize: "0.8rem" }}>
-                      injured
-                    </span>
-                  ) : null}
-                  <div style={{ color: "#64748b", fontSize: "0.85rem" }}>{p.phone}</div>
+                  {p.injured ? <span className="ml-2 text-sm text-orange-600">injured</span> : null}
+                  <div className="text-sm text-slate-400">{p.phone}</div>
                 </div>
-                <div style={{ display: "flex", gap: "0.5rem" }}>
+                <div className="flex items-center gap-3">
                   <Link
                     href={`/roster/${p.id}/edit`}
-                    style={{ color: "#60a5fa", fontSize: "0.85rem" }}
+                    className={`inline-flex items-center gap-1 text-sm ${linkAccent}`}
                   >
-                    Edit
+                    <Pencil size={14} /> Edit
                   </Link>
                   <form action={deletePlayerAction.bind(null, p.id)}>
-                    <button
-                      type="submit"
-                      style={{
-                        background: "none",
-                        border: "none",
-                        color: "#f87171",
-                        cursor: "pointer",
-                        fontSize: "0.85rem",
-                        padding: 0,
-                      }}
-                    >
-                      Delete
+                    <button type="submit" className={btnDanger}>
+                      <Trash2 size={14} /> Delete
                     </button>
                   </form>
                 </div>
@@ -124,8 +83,8 @@ export default async function RosterPage({
         )}
       </section>
 
-      <section style={{ marginTop: "2rem" }}>
-        <h2 style={{ fontSize: "1.1rem" }}>Add a player</h2>
+      <section className="mt-8">
+        <h2 className="text-lg font-semibold">Add a player</h2>
         <PlayerForm action={addPlayerAction} submitLabel="Add player" />
       </section>
     </main>

@@ -1,4 +1,5 @@
 import type { EntryStatus, Squad } from "@prisma/client";
+import { SQUAD_EMOJI } from "./squad";
 
 // Pure WhatsApp message builders. No DB, no React — usable from server
 // components today and a future native client. Pending Answer (DEFAULT) is
@@ -68,8 +69,8 @@ export function buildSquadBody(d: EventMessageData): string {
   if (!assigned.length) return "";
 
   const sections: Array<[Squad, string]> = [
-    ["A", "🅰️ Team A"],
-    ["B", "🅱️ Team B"],
+    ["A", `${SQUAD_EMOJI.A} Team A`],
+    ["B", `${SQUAD_EMOJI.B} Team B`],
   ];
   const lines: string[] = [];
   for (const [sq, label] of sections) {

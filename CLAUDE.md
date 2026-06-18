@@ -59,6 +59,7 @@ We're starting as a web-first PWA (Next.js). A PWA can later be wrapped in a nat
 ## Stack (committed)
 
 - **Frontend:** TypeScript + Next.js (App Router), as a PWA (`manifest.json`, add-to-home-screen).
+- **Styling:** Tailwind CSS v4. Light theme (mobile-first usage), Inter font, `lucide-react` for icons. Shared button/field class strings live in `src/lib/ui.ts` rather than a component library.
 - **Database:** Postgres via Prisma.
 - **Auth:** magic-link email; coach-only in v1. Player opt-in (phase 2) is a public tokenized URL, not auth.
 - **Hosting:** Railway (app + Postgres in one project).

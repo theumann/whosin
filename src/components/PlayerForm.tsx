@@ -1,24 +1,5 @@
 import type { Player } from "@prisma/client";
-
-const fieldStyle: React.CSSProperties = {
-  display: "block",
-  width: "100%",
-  boxSizing: "border-box",
-  padding: "0.5rem 0.6rem",
-  marginTop: "0.25rem",
-  borderRadius: 6,
-  border: "1px solid #334155",
-  background: "#0b1220",
-  color: "#e2e8f0",
-  fontSize: "0.95rem",
-};
-
-const labelStyle: React.CSSProperties = {
-  display: "block",
-  marginBottom: "0.75rem",
-  color: "#cbd5e1",
-  fontSize: "0.85rem",
-};
+import { btnPrimary, fieldClass, labelClass } from "@/lib/ui";
 
 function Field({
   name,
@@ -36,16 +17,16 @@ function Field({
   placeholder?: string;
 }) {
   return (
-    <label style={labelStyle}>
+    <label className={labelClass}>
       {label}
-      {required ? <span style={{ color: "#f87171" }}> *</span> : null}
+      {required ? <span className="text-red-600"> *</span> : null}
       <input
         name={name}
         type={type}
         required={required}
         defaultValue={defaultValue ?? ""}
         placeholder={placeholder}
-        style={fieldStyle}
+        className={`${fieldClass} mt-1`}
       />
     </label>
   );
@@ -78,32 +59,20 @@ export function PlayerForm({
         defaultValue={player?.skillBucket}
         placeholder="e.g. A, defender, beginner"
       />
-      <label style={{ ...labelStyle, display: "flex", alignItems: "center", gap: "0.5rem" }}>
+      <label className={`${labelClass} flex items-center gap-2`}>
         <input name="injured" type="checkbox" defaultChecked={player?.injured ?? false} />
         Injured (defaults to Injury Reserve on new events)
       </label>
-      <label style={labelStyle}>
+      <label className={labelClass}>
         Notes
         <textarea
           name="notes"
           defaultValue={player?.notes ?? ""}
           rows={2}
-          style={{ ...fieldStyle, resize: "vertical" }}
+          className={`${fieldClass} mt-1 resize-y`}
         />
       </label>
-      <button
-        type="submit"
-        style={{
-          marginTop: "0.5rem",
-          padding: "0.55rem 1.1rem",
-          borderRadius: 6,
-          border: "none",
-          background: "#2563eb",
-          color: "white",
-          fontSize: "0.95rem",
-          cursor: "pointer",
-        }}
-      >
+      <button type="submit" className={`${btnPrimary} mt-2`}>
         {submitLabel}
       </button>
     </form>

@@ -14,8 +14,8 @@ export const STATUS_LABELS: Record<EntryStatus, string> = {
 export const STATUS_ORDER: EntryStatus[] = ["IN", "WAITLIST", "INJURY", "DEFAULT"];
 
 export const STATUS_COLORS: Record<EntryStatus, string> = {
-  IN: "#22c55e",
-  WAITLIST: "#eab308",
-  INJURY: "#fb923c",
+  IN: "#059669",
+  WAITLIST: "#d97706",
+  INJURY: "#ea580c",
   DEFAULT: "#64748b",
 };

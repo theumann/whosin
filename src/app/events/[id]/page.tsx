@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { EntryStatus, Squad } from "@prisma/client";
+import { ArrowLeft, Megaphone, Pencil, Repeat, Trash2 } from "lucide-react";
 import { getEventWithRoster } from "@/server/services/events";
 import { STATUS_COLORS, STATUS_LABELS, STATUS_ORDER } from "@/lib/status";
+import { SQUAD_COLORS } from "@/lib/squad";
 import {
   buildCanceledMessage,
   buildHeader,
@@ -19,10 +21,10 @@ import {
   setSquadAction,
   setStatusAction,
 } from "../actions";
+import { btnDanger, btnWarning, linkAccent } from "@/lib/ui";
 
 export const dynamic = "force-dynamic";
 
-const SQUAD_COLORS: Record<Squad, string> = { A: "#38bdf8", B: "#c084fc" };
 const SQUAD_OPTIONS: Array<{ value: string; label: string }> = [
   { value: "A", label: "A" },
   { value: "B", label: "B" },
@@ -71,74 +73,63 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
   const canceledShareUrl = whatsappShareUrl(buildCanceledMessage(msgData));
 
   return (
-    <main style={{ maxWidth: 720, margin: "0 auto", padding: "2rem 1.5rem" }}>
-      <Link href="/events" style={{ color: "#60a5fa", fontSize: "0.85rem" }}>
-        &larr; Events
+    <main className="mx-auto max-w-2xl px-6 py-8">
+      <Link href="/events" className={`inline-flex items-center gap-1 text-sm ${linkAccent}`}>
+        <ArrowLeft size={16} /> Events
       </Link>
 
-      <h1 style={{ marginBottom: "0.25rem" }}>
+      <h1 className="mb-1 flex items-center gap-2.5 text-2xl font-bold">
         {dateFmt.format(event.startsAt)}
         {event.seriesId ? (
           <span
             title="Part of a recurring series"
-            style={{ marginLeft: "0.6rem", color: "#60a5fa", fontSize: "0.9rem", fontWeight: 400 }}
+            className="inline-flex items-center gap-1 text-sm font-normal text-indigo-600"
           >
-            ↻ recurring
+            <Repeat size={15} /> recurring
           </span>
         ) : null}
       </h1>
-      {event.canceledAt ? (
-        <p style={{ color: "#f87171", fontWeight: 600, marginTop: 0 }}>CANCELED</p>
-      ) : null}
-      {event.location ? <p style={{ color: "#94a3b8", marginTop: 0 }}>{event.location}</p> : null}
-      {event.notes ? <p style={{ color: "#cbd5e1" }}>{event.notes}</p> : null}
+      {event.canceledAt ? <p className="mt-0 font-semibold text-red-600">CANCELED</p> : null}
+      {event.location ? <p className="mt-0 text-slate-500">{event.location}</p> : null}
+      {event.notes ? <p className="text-slate-700">{event.notes}</p> : null}
 
       {/* Capacity indicator + per-status counts */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "baseline",
-          gap: "1rem",
-          flexWrap: "wrap",
-          margin: "1rem 0",
-        }}
-      >
+      <div className="my-4 flex flex-wrap items-baseline gap-4">
         <span
-          style={{
-            fontSize: "1.4rem",
-            fontWeight: 700,
-            color: overCapacity ? "#f87171" : "#22c55e",
-          }}
+          className={`text-2xl font-bold ${overCapacity ? "text-red-600" : "text-emerald-600"}`}
         >
           {inCount}
           {event.capacity != null ? ` / ${event.capacity}` : ""} in
         </span>
         {STATUS_ORDER.filter((s) => s !== "IN").map((s) => (
-          <span key={s} style={{ color: STATUS_COLORS[s], fontSize: "0.85rem" }}>
+          <span key={s} style={{ color: STATUS_COLORS[s] }} className="text-sm">
             {counts[s]} {STATUS_LABELS[s]}
           </span>
         ))}
       </div>
 
       {/* Actions */}
-      <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap", marginBottom: "1.5rem" }}>
-        <Link href={`/events/${event.id}/edit`} style={{ color: "#60a5fa", fontSize: "0.85rem" }}>
-          Edit event
+      <div className="mb-6 flex flex-wrap items-center gap-4">
+        <Link
+          href={`/events/${event.id}/edit`}
+          className={`inline-flex items-center gap-1 text-sm ${linkAccent}`}
+        >
+          <Pencil size={14} /> Edit event
         </Link>
         <form action={setCanceledAction.bind(null, event.id, !event.canceledAt)}>
-          <button type="submit" style={linkButton("#fb923c")}>
+          <button type="submit" className={btnWarning}>
             {event.canceledAt ? "Un-cancel" : "Cancel game"}
           </button>
         </form>
         <form action={deleteEventAction.bind(null, event.id)}>
-          <button type="submit" style={linkButton("#f87171")}>
-            Delete event
+          <button type="submit" className={btnDanger}>
+            <Trash2 size={14} /> Delete event
           </button>
         </form>
         {event.seriesId ? (
           <form action={deleteSeriesAction.bind(null, event.seriesId)}>
-            <button type="submit" style={linkButton("#f87171")}>
-              Delete series (future events)
+            <button type="submit" className={btnDanger}>
+              <Trash2 size={14} /> Delete series (future events)
             </button>
           </form>
         ) : null}
@@ -146,44 +137,38 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
 
       {/* Squad split summary */}
       {inEntries.length > 0 ? (
-        <section style={{ marginBottom: "1.5rem" }}>
-          <h2 style={{ fontSize: "1.1rem", marginBottom: "0.5rem" }}>Teams</h2>
-          <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
+        <section className="mb-6">
+          <h2 className="mb-2 text-lg font-semibold">Teams</h2>
+          <div className="flex flex-wrap gap-4">
             {(["A", "B"] as const).map((sq) => {
               const members = sq === "A" ? squadA : squadB;
               return (
                 <div
                   key={sq}
-                  style={{
-                    flex: "1 1 200px",
-                    border: `1px solid ${SQUAD_COLORS[sq]}`,
-                    borderRadius: 8,
-                    padding: "0.6rem 0.8rem",
-                  }}
+                  style={{ borderColor: SQUAD_COLORS[sq] }}
+                  className="flex-1 basis-48 rounded-lg border bg-white px-3.5 py-2.5 shadow-sm"
                 >
                   <strong style={{ color: SQUAD_COLORS[sq] }}>
                     Team {sq} ({members.length})
                   </strong>
                   {members.length ? (
-                    <ul style={{ listStyle: "none", padding: 0, margin: "0.4rem 0 0" }}>
+                    <ul className="m-0 mt-1.5 list-none p-0">
                       {members.map((e) => (
-                        <li key={e.id} style={{ fontSize: "0.9rem", color: "#cbd5e1" }}>
+                        <li key={e.id} className="text-sm text-slate-700">
                           {e.player.firstName}
                           {e.player.lastName ? ` ${e.player.lastName}` : ""}
                         </li>
                       ))}
                     </ul>
                   ) : (
-                    <p style={{ color: "#64748b", fontSize: "0.85rem", margin: "0.4rem 0 0" }}>
-                      No one yet
-                    </p>
+                    <p className="mt-1.5 mb-0 text-sm text-slate-400">No one yet</p>
                   )}
                 </div>
               );
             })}
           </div>
           {unassigned.length ? (
-            <p style={{ color: "#64748b", fontSize: "0.85rem", marginTop: "0.5rem" }}>
+            <p className="mt-2 text-sm text-slate-400">
               {unassigned.length} In, not yet assigned to a team
             </p>
           ) : null}
@@ -191,35 +176,17 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
       ) : null}
 
       {/* Per-player status control */}
-      <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+      <ul className="m-0 list-none p-0">
         {event.entries.map((entry) => (
-          <li
-            key={entry.id}
-            style={{
-              padding: "0.55rem 0",
-              borderBottom: "1px solid #1e293b",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                gap: "0.75rem",
-                flexWrap: "wrap",
-              }}
-            >
+          <li key={entry.id} className="border-b border-slate-200 py-2.5">
+            <div className="flex flex-wrap items-center justify-between gap-3">
               <span>
                 <strong>{entry.player.firstName}</strong>
                 {entry.player.lastName ? ` ${entry.player.lastName}` : ""}
                 {entry.status === "IN" && entry.squad ? (
                   <span
-                    style={{
-                      marginLeft: "0.5rem",
-                      color: SQUAD_COLORS[entry.squad],
-                      fontSize: "0.8rem",
-                      fontWeight: 700,
-                    }}
+                    style={{ color: SQUAD_COLORS[entry.squad] }}
+                    className="ml-2 text-sm font-bold"
                   >
                     Team {entry.squad}
                   </span>
@@ -227,7 +194,7 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
               </span>
               <form
                 action={setStatusAction.bind(null, event.id, entry.playerId)}
-                style={{ display: "flex", gap: "0.3rem" }}
+                className="flex gap-1"
               >
                 {STATUS_ORDER.map((s) => {
                   const active = entry.status === s;
@@ -238,15 +205,15 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
                       name="status"
                       value={s}
                       style={{
-                        padding: "0.3rem 0.55rem",
-                        borderRadius: 6,
-                        border: `1px solid ${active ? STATUS_COLORS[s] : "#334155"}`,
-                        background: active ? STATUS_COLORS[s] : "transparent",
-                        color: active ? "#0b1220" : "#94a3b8",
-                        fontSize: "0.78rem",
-                        fontWeight: active ? 700 : 400,
-                        cursor: "pointer",
+                        borderColor: active ? STATUS_COLORS[s] : undefined,
+                        background: active ? STATUS_COLORS[s] : undefined,
+                        color: active ? "#ffffff" : undefined,
                       }}
+                      className={`cursor-pointer rounded-md border px-2 py-1 text-xs font-bold transition-colors ${
+                        active
+                          ? ""
+                          : "border-slate-300 bg-white font-normal text-slate-500 hover:border-slate-400 hover:text-slate-900"
+                      }`}
                     >
                       {STATUS_LABELS[s]}
                     </button>
@@ -259,16 +226,9 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
             {entry.status === "IN" ? (
               <form
                 action={setSquadAction.bind(null, event.id, entry.playerId)}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "0.3rem",
-                  marginTop: "0.4rem",
-                }}
+                className="mt-1.5 flex items-center gap-1"
               >
-                <span style={{ color: "#64748b", fontSize: "0.75rem", marginRight: "0.2rem" }}>
-                  Team:
-                </span>
+                <span className="mr-0.5 text-xs text-slate-400">Team:</span>
                 {SQUAD_OPTIONS.map((opt) => {
                   const active =
                     (opt.value === "" && entry.squad == null) || entry.squad === opt.value;
@@ -280,15 +240,15 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
                       name="squad"
                       value={opt.value}
                       style={{
-                        padding: "0.2rem 0.5rem",
-                        borderRadius: 6,
-                        border: `1px solid ${active ? color : "#334155"}`,
-                        background: active ? color : "transparent",
-                        color: active ? "#0b1220" : "#94a3b8",
-                        fontSize: "0.75rem",
-                        fontWeight: active ? 700 : 400,
-                        cursor: "pointer",
+                        borderColor: active ? color : undefined,
+                        background: active ? color : undefined,
+                        color: active ? "#ffffff" : undefined,
                       }}
+                      className={`cursor-pointer rounded-md border px-2 py-0.5 text-xs font-bold transition-colors ${
+                        active
+                          ? ""
+                          : "border-slate-300 bg-white font-normal text-slate-500 hover:border-slate-400 hover:text-slate-900"
+                      }`}
                     >
                       {opt.label}
                     </button>
@@ -301,45 +261,25 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
       </ul>
 
       {/* Broadcast to WhatsApp */}
-      <section style={{ marginTop: "2.5rem" }}>
-        <h2 style={{ fontSize: "1.1rem" }}>Send to WhatsApp</h2>
+      <section className="mt-10">
+        <h2 className="text-lg font-semibold">Send to WhatsApp</h2>
         {event.canceledAt ? (
-          <p style={{ marginBottom: "1rem" }}>
+          <p className="mb-4">
             <a
               href={canceledShareUrl}
               target="_blank"
               rel="noopener noreferrer"
-              style={{
-                display: "inline-block",
-                padding: "0.55rem 1.1rem",
-                borderRadius: 6,
-                background: "#fb923c",
-                color: "#0b1220",
-                fontWeight: 700,
-                textDecoration: "none",
-                fontSize: "0.95rem",
-              }}
+              className="inline-flex items-center gap-1.5 rounded-md bg-orange-500 px-4 py-2 text-sm font-bold text-white no-underline shadow-sm transition-colors hover:bg-orange-600"
             >
-              📣 Share cancellation
+              <Megaphone size={16} /> Share cancellation
             </a>
           </p>
         ) : null}
         <WhatsAppComposer header={headerText} roster={rosterBody} squad={squadBody} />
-        <p style={{ color: "#64748b", fontSize: "0.8rem", marginTop: "0.6rem" }}>
+        <p className="mt-2.5 text-sm text-slate-400">
           Opens WhatsApp with the message ready — pick your group and send.
         </p>
       </section>
     </main>
   );
-}
-
-function linkButton(color: string): React.CSSProperties {
-  return {
-    background: "none",
-    border: "none",
-    color,
-    cursor: "pointer",
-    fontSize: "0.85rem",
-    padding: 0,
-  };
 }
