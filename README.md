@@ -135,9 +135,10 @@ use it without this), 🟡 = needed for a credible launch, ⚪ = nice-to-have.
 
 ### 1. Hosting (Railway) 🔴
 
-- [ ] **Create a separate personal Railway account** (use a personal email; keep
-      it distinct from the partner's account on the other project). Free/Hobby
-      tier is fine to start; upgrade when usage warrants.
+- [ ] **Add whosin as its own project** in the existing Railway account (a new
+      account isn't needed — Railway is one account → many projects). For a clean
+      ownership/billing boundary from the partner's project, put it in its **own
+      Workspace**. Free/Hobby tier is fine to start; upgrade when usage warrants.
 - [ ] **One Railway project, two services:** the Next.js app + a Postgres
       database. Railway can host both — no need for a separate DB host. (Hosting
       the app on Railway too keeps everything in one place and matches existing
@@ -148,21 +149,21 @@ use it without this), 🟡 = needed for a credible launch, ⚪ = nice-to-have.
 - [ ] Confirm the app runs as a long-lived Node server (it does) — Prisma
       connection pooling is fine, no serverless adapter needed.
 
-> **Working across two Railway accounts** (this project vs. the partner's
-> project, under the same GitHub account). The risk is _deploying into the wrong
-> Railway account_, not GitHub or Claude getting confused.
+> **Two projects in one Railway account** (whosin + the partner's project). Using
+> one account is simpler than juggling two logins — the only risk is deploying to
+> the wrong _project_, which is low-stakes and obvious (the project name is right
+> there). GitHub and Claude don't enter into it.
 >
-> - **Use a separate browser** for each Railway account (dashboard sessions are
->   browser-scoped, so they don't interfere).
-> - **GitHub doesn't pick the account** — the Railway dashboard you're logged
->   into does. Create the whosin service while in _your_ account's dashboard.
+> - **Separate Workspaces** keep ownership/billing clean between whosin and the
+>   partner's project while sharing one login. Switch projects from the dropdown.
+> - **GitHub doesn't pick the project** — the Railway dashboard you're in does.
+>   Create the whosin service from the whosin project/workspace.
 > - **Scope the Railway GitHub App to "Only select repositories" → just the
->   whosin repo** when authorizing. Then the other Railway account can't even see
->   this repo (and vice versa) — the strongest guarantee.
-> - **Avoid the global `railway` CLI** (its token is account-wide, not
->   browser-scoped). Prefer the dashboard. If you must use the CLI or CI, use a
->   **project-scoped `RAILWAY_TOKEN`**, which can't touch any other project or
->   account. Run `railway whoami` before any CLI action.
+>   whosin repo** when authorizing, so a service can't accidentally pull the wrong
+>   repo.
+> - **Prefer the dashboard over the global `railway` CLI.** If you use the CLI or
+>   CI, use a **project-scoped `RAILWAY_TOKEN`** (it can't touch any other
+>   project) and run `railway status` / `railway whoami` before acting.
 > - **Claude has no Railway connection** — it only touches Railway if you ask it
 >   to run a `railway` CLI command, so dashboard-only work keeps it out entirely.
 
