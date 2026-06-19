@@ -82,7 +82,8 @@ export async function addEventAction(formData: FormData) {
 }
 
 export async function deleteSeriesAction(seriesId: string) {
-  await deleteSeries(seriesId);
+  const groupId = await getCurrentGroupId();
+  await deleteSeries(groupId, seriesId);
   revalidatePath("/events");
   redirect("/events");
 }
@@ -93,31 +94,36 @@ export async function updateEventAction(id: string, formData: FormData) {
   if (errors.length) {
     redirect(`/events/${id}/edit?error=${encodeURIComponent(errors.join(" "))}`);
   }
-  await updateEvent(id, input);
+  const groupId = await getCurrentGroupId();
+  await updateEvent(groupId, id, input);
   revalidatePath(`/events/${id}`);
   redirect(`/events/${id}`);
 }
 
 export async function deleteEventAction(id: string) {
-  await deleteEvent(id);
+  const groupId = await getCurrentGroupId();
+  await deleteEvent(groupId, id);
   revalidatePath("/events");
   redirect("/events");
 }
 
 export async function setStatusAction(eventId: string, playerId: string, formData: FormData) {
   const status = String(formData.get("status") ?? "") as EntryStatus;
-  await setEntryStatus(eventId, playerId, status);
+  const groupId = await getCurrentGroupId();
+  await setEntryStatus(groupId, eventId, playerId, status);
   revalidatePath(`/events/${eventId}`);
 }
 
 export async function setCanceledAction(eventId: string, canceled: boolean) {
-  await setEventCanceled(eventId, canceled);
+  const groupId = await getCurrentGroupId();
+  await setEventCanceled(groupId, eventId, canceled);
   revalidatePath(`/events/${eventId}`);
 }
 
 export async function setSquadAction(eventId: string, playerId: string, formData: FormData) {
   const raw = String(formData.get("squad") ?? "");
   const squad: Squad | null = raw === "A" || raw === "B" ? raw : null;
-  await setSquad(eventId, playerId, squad);
+  const groupId = await getCurrentGroupId();
+  await setSquad(groupId, eventId, playerId, squad);
   revalidatePath(`/events/${eventId}`);
 }

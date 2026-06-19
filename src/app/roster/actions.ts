@@ -48,12 +48,14 @@ export async function updatePlayerAction(id: string, formData: FormData) {
   if (errors.length) {
     redirect(`/roster/${id}/edit?error=${encodeURIComponent(errors.join(" "))}`);
   }
-  await updatePlayer(id, input);
+  const groupId = await getCurrentGroupId();
+  await updatePlayer(groupId, id, input);
   revalidatePath("/roster");
   redirect("/roster");
 }
 
 export async function deletePlayerAction(id: string) {
-  await deletePlayer(id);
+  const groupId = await getCurrentGroupId();
+  await deletePlayer(groupId, id);
   revalidatePath("/roster");
 }

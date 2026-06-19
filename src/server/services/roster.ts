@@ -28,20 +28,20 @@ export function listPlayers(groupId: string) {
   });
 }
 
-export function getPlayer(id: string) {
-  return db.player.findUnique({ where: { id } });
+export function getPlayer(groupId: string, id: string) {
+  return db.player.findFirst({ where: { id, groupId } });
 }
 
 export function createPlayer(groupId: string, input: PlayerInput) {
   return db.player.create({ data: { groupId, ...normalize(input) } });
 }
 
-export function updatePlayer(id: string, input: PlayerInput) {
-  return db.player.update({ where: { id }, data: normalize(input) });
+export function updatePlayer(groupId: string, id: string, input: PlayerInput) {
+  return db.player.update({ where: { id, groupId }, data: normalize(input) });
 }
 
-export function deletePlayer(id: string) {
-  return db.player.delete({ where: { id } });
+export function deletePlayer(groupId: string, id: string) {
+  return db.player.delete({ where: { id, groupId } });
 }
 
 function normalize(input: PlayerInput) {
