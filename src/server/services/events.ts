@@ -58,9 +58,9 @@ export async function createEvent(groupId: string, input: EventInput) {
   return event;
 }
 
-export function updateEvent(id: string, input: EventInput) {
+export function updateEvent(groupId: string, id: string, input: EventInput) {
   return db.event.update({
-    where: { id },
+    where: { id, groupId },
     data: {
       startsAt: input.startsAt,
       location: clean(input.location),
@@ -70,8 +70,8 @@ export function updateEvent(id: string, input: EventInput) {
   });
 }
 
-export function deleteEvent(id: string) {
-  return db.event.delete({ where: { id } });
+export function deleteEvent(groupId: string, id: string) {
+  return db.event.delete({ where: { id, groupId } });
 }
 
 export type SeriesInput = {
@@ -159,21 +159,33 @@ export async function createSeries(groupId: string, input: SeriesInput) {
 
 // Delete a series and its FUTURE occurrences. Past events are kept as history
 // (the FK is SetNull, so they simply detach from the deleted series).
-export async function deleteSeries(seriesId: string) {
+export async function deleteSeries(groupId: string, seriesId: string) {
   await db.event.deleteMany({
-    where: { seriesId, startsAt: { gte: new Date() } },
+    where: { seriesId, groupId, startsAt: { gte: new Date() } },
   });
-  await db.eventSeries.delete({ where: { id: seriesId } });
+  await db.eventSeries.delete({ where: { id: seriesId, groupId } });
 }
 
-export function setEventCanceled(id: string, canceled: boolean) {
+export function setEventCanceled(groupId: string, id: string, canceled: boolean) {
   return db.event.update({
-    where: { id },
+    where: { id, groupId },
     data: { canceledAt: canceled ? new Date() : null },
   });
 }
 
-export function setEntryStatus(eventId: string, playerId: string, status: EntryStatus) {
+// eventId/playerId form a unique compound key that doesn't carry groupId, so
+// ownership is verified separately before touching the entry.
+async function assertEventInGroup(groupId: string, eventId: string) {
+  await db.event.findFirstOrThrow({ where: { id: eventId, groupId } });
+}
+
+export async function setEntryStatus(
+  groupId: string,
+  eventId: string,
+  playerId: string,
+  status: EntryStatus,
+) {
+  await assertEventInGroup(groupId, eventId);
   return db.eventEntry.update({
     where: { eventId_playerId: { eventId, playerId } },
     data: { status },
@@ -181,7 +193,13 @@ export function setEntryStatus(eventId: string, playerId: string, status: EntryS
 }
 
 // Manual A/B squad assignment for an in-event player. null clears it.
-export function setSquad(eventId: string, playerId: string, squad: Squad | null) {
+export async function setSquad(
+  groupId: string,
+  eventId: string,
+  playerId: string,
+  squad: Squad | null,
+) {
+  await assertEventInGroup(groupId, eventId);
   return db.eventEntry.update({
     where: { eventId_playerId: { eventId, playerId } },
     data: { squad },
@@ -211,7 +229,9 @@ export async function ensureEntries(eventId: string) {
 
 // Full event with its roster, entries synced to the current roster, ordered for
 // the status screen.
-export async function getEventWithRoster(eventId: string) {
+export async function getEventWithRoster(groupId: string, eventId: string) {
+  const owned = await db.event.findFirst({ where: { id: eventId, groupId }, select: { id: true } });
+  if (!owned) return null;
   await ensureEntries(eventId);
   return db.event.findUnique({
     where: { id: eventId },
@@ -225,8 +245,8 @@ export async function getEventWithRoster(eventId: string) {
   });
 }
 
-export function getEvent(id: string) {
-  return db.event.findUnique({ where: { id } });
+export function getEvent(groupId: string, id: string) {
+  return db.event.findFirst({ where: { id, groupId } });
 }
 
 function clean(value?: string | null): string | null {

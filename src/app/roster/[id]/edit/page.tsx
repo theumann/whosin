@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { getPlayer } from "@/server/services/roster";
+import { getCurrentGroupId } from "@/server/coach";
 import { PlayerForm } from "@/components/PlayerForm";
 import { updatePlayerAction } from "../../actions";
 import { errorBanner, linkAccent } from "@/lib/ui";
@@ -17,7 +18,8 @@ export default async function EditPlayerPage({
 }) {
   const { id } = await params;
   const { error } = await searchParams;
-  const player = await getPlayer(id);
+  const groupId = await getCurrentGroupId();
+  const player = await getPlayer(groupId, id);
   if (!player) notFound();
 
   return (

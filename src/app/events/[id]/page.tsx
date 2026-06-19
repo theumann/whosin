@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import type { EntryStatus, Squad } from "@prisma/client";
 import { ArrowLeft, Megaphone, Pencil, Repeat, Trash2 } from "lucide-react";
 import { getEventWithRoster } from "@/server/services/events";
+import { getCurrentGroupId } from "@/server/coach";
 import { STATUS_COLORS, STATUS_LABELS, STATUS_ORDER } from "@/lib/status";
 import { SQUAD_COLORS } from "@/lib/squad";
 import {
@@ -41,7 +42,8 @@ const dateFmt = new Intl.DateTimeFormat("en-US", {
 
 export default async function EventPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const event = await getEventWithRoster(id);
+  const groupId = await getCurrentGroupId();
+  const event = await getEventWithRoster(groupId, id);
   if (!event) notFound();
 
   const counts = STATUS_ORDER.reduce(

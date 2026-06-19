@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { getEvent } from "@/server/services/events";
+import { getCurrentGroupId } from "@/server/coach";
 import { EventForm } from "@/components/EventForm";
 import { updateEventAction } from "../../actions";
 import { errorBanner, linkAccent } from "@/lib/ui";
@@ -17,7 +18,8 @@ export default async function EditEventPage({
 }) {
   const { id } = await params;
   const { error } = await searchParams;
-  const event = await getEvent(id);
+  const groupId = await getCurrentGroupId();
+  const event = await getEvent(groupId, id);
   if (!event) notFound();
 
   return (
