@@ -9,11 +9,16 @@ import { db } from "@/lib/db";
 const emailServerHost = process.env.EMAIL_SERVER_HOST;
 const from = process.env.EMAIL_FROM ?? "whosin <login@whosin.local>";
 
+const emailServerPort = Number(process.env.EMAIL_SERVER_PORT ?? 587);
+
 const emailOptions = emailServerHost
   ? {
       server: {
         host: emailServerHost,
-        port: Number(process.env.EMAIL_SERVER_PORT ?? 587),
+        port: emailServerPort,
+        // Port 465 is implicit TLS and requires secure:true; 587/others use
+        // STARTTLS (secure:false, the default upgrade-after-connect flow).
+        secure: emailServerPort === 465,
         auth: {
           user: process.env.EMAIL_SERVER_USER,
           pass: process.env.EMAIL_SERVER_PASSWORD,
