@@ -38,7 +38,7 @@ The rule: route handlers / server actions stay thin and delegate to
 ```bash
 npm install
 cp .env.example .env          # then fill in DATABASE_URL + AUTH_SECRET
-npm run db:push               # sync schema to your local Postgres
+npm run db:migrate            # apply migrations to your local Postgres
 npm run db:seed               # demo coach + 12-player roster
 npm run dev                   # http://localhost:3000
 ```
@@ -52,7 +52,7 @@ Log in: enter your email, then copy the **magic link printed in the terminal**
 | ----------------------- | --------------------------------------------------------------------- |
 | `npm run dev`           | Start the dev server                                                  |
 | `npm run build`         | Production build                                                      |
-| `npm run db:push`       | Sync Prisma schema to the DB (no migration files)                     |
+| `npm run db:migrate`    | Create + apply a migration from schema changes (local dev)            |
 | `npm run db:seed`       | Reset to a known demo roster (**destructive** — wipes event statuses) |
 | `npm run db:studio`     | Prisma Studio                                                         |
 | `npm run lint`          | ESLint — code quality                                                 |
@@ -133,20 +133,20 @@ Everything below is what stands between the current local-only app and real
 users at **whosin.team**. Ordered roughly by priority. 🔴 = blocker (no one can
 use it without this), 🟡 = needed for a credible launch, ⚪ = nice-to-have.
 
-### 1. Hosting (Railway) 🔴
+### 1. Hosting (Railway) 🔴 ✅ Done
 
-- [ ] **Add whosin as its own project** in the existing Railway account (a new
+- [x] **Add whosin as its own project** in the existing Railway account (a new
       account isn't needed — Railway is one account → many projects). For a clean
       ownership/billing boundary from the partner's project, put it in its **own
       Workspace**. Free/Hobby tier is fine to start; upgrade when usage warrants.
-- [ ] **One Railway project, two services:** the Next.js app + a Postgres
+- [x] **One Railway project, two services:** the Next.js app + a Postgres
       database. Railway can host both — no need for a separate DB host. (Hosting
       the app on Railway too keeps everything in one place and matches existing
       experience; Vercel + a separate DB is the main alternative but adds moving
       parts.)
-- [ ] **Connect the GitHub repo** to the app service so Railway builds on push
+- [x] **Connect the GitHub repo** to the app service so Railway builds on push
       (`npm run build` → `npm start`). Set the start command if needed.
-- [ ] Confirm the app runs as a long-lived Node server (it does) — Prisma
+- [x] Confirm the app runs as a long-lived Node server (it does) — Prisma
       connection pooling is fine, no serverless adapter needed.
 
 > **Two projects in one Railway account** (whosin + the partner's project). Using
@@ -167,53 +167,88 @@ use it without this), 🟡 = needed for a credible launch, ⚪ = nice-to-have.
 > - **Claude has no Railway connection** — it only touches Railway if you ask it
 >   to run a `railway` CLI command, so dashboard-only work keeps it out entirely.
 
-### 2. Production database 🔴
+### 2. Production database 🔴 ✅ Done
 
-- [ ] Provision **Railway Postgres**; copy its `DATABASE_URL` into the app
-      service's env (Railway can inject it automatically).
-- [ ] **Decide on migrations:** locally we use `prisma db push` (no migration
-      files). Before launch, generate a baseline migration and use
-      `prisma migrate deploy` in production so schema changes are tracked and
-      repeatable. (Acceptable shortcut for the very first deploy: `db push`
-      against the prod DB — but switch to migrations soon.)
-- [ ] **Do NOT run the demo seed against production.** It's destructive and
+- [x] Provision **Railway Postgres**; copy its `DATABASE_URL` into the app
+      service's env (Railway can inject it automatically). Wired via Railway's
+      variable reference (`${{Postgres.DATABASE_URL}}`), the internal URL.
+- [x] **Decide on migrations:** took the documented shortcut — ran `prisma db
+      push` directly against the prod DB for the first deploy. **Now resolved:**
+      generated a baseline migration
+      (`prisma/migrations/20260619214557_baseline`) from a diff against an
+      empty schema, then marked it **applied** (not re-run, since the schema
+      already matched) on local, staging, and production via
+      `prisma migrate resolve --applied 20260619214557_baseline`. `npm start`
+      now runs `prisma migrate deploy` before `next start`, so future schema
+      changes ship as committed migrations applied automatically on deploy.
+      Local dev now uses `npm run db:migrate` (`prisma migrate dev`) instead
+      of `db:push`.
+- [x] **Do NOT run the demo seed against production.** It's destructive and
       creates fake players. The real coach signs in and builds their own group.
-      Consider guarding `prisma/seed.mjs` to refuse a non-local `DATABASE_URL`.
-- [ ] **Enable database backups** in Railway.
+      `prisma/seed.mjs` now refuses to run against any non-local
+      `DATABASE_URL` (checks the hostname, not a hardcoded URL) unless
+      `ALLOW_REMOTE_SEED=true` is explicitly set — keeps the door open to
+      seed staging on purpose, while blocking accidental runs against prod.
+- [x] **Enable WAL archiving** on the Railway Postgres service (Postgres
+      service → **Backups** tab → enable continuous archiving). Scheduled
+      backups and point-in-time **restore** require the Pro plan (not
+      available on Hobby), but archiving itself is free and runs regardless —
+      enabled now so a restore is possible later if you ever upgrade.
+- [x] **Staging environment, reachable from a phone.** Set up via Railway's
+      **Duplicate Environment** on the `production` environment, which cloned
+      the app + Postgres services into a new `staging` environment with the
+      `DATABASE_URL` reference automatically rewired to the staging Postgres
+      (confirmed it resolves to the staging DB, not prod). Then: generated a
+      fresh `AUTH_SECRET`, generated a public domain
+      (`whosin-staging.up.railway.app`) and set `AUTH_URL` to it, kept the
+      same `RESEND_API_KEY` / `EMAIL_FROM` (same verified sending domain),
+      and pushed the schema with `prisma db push` using the staging
+      Postgres's **public** connection string (`DATABASE_URL_PUBLIC`-style
+      URL — the internal `postgres.railway.internal` host only resolves
+      inside Railway's network, not from a laptop). Verified end-to-end on a
+      phone: page loads, magic-link login works. Local Postgres remains fine
+      for everyday schema iteration; this environment covers the cases local
+      can't (phone testing, rehearsing against a deployed build).
 
-### 3. Auth + real email 🔴 (the big one)
+### 3. Auth + real email 🔴 ✅ Done
 
-Right now magic-link login **prints the link to the server console** — fine for
-dev, but in production nobody can log in until real email works.
+Magic-link login now sends real email in production and has been confirmed
+working end-to-end (email arrives, link signs in).
 
-- [ ] **Sign up for an email sender** (Resend is the common choice with Auth.js).
-- [ ] **Verify whosin.team** with the sender — add the **SPF, DKIM, DMARC** DNS
-      records at the domain registrar so login emails don't land in spam.
-- [ ] **Replace the console `sendVerificationRequest`** in `src/auth.ts` with the
-      real transport (Resend API / SMTP), configured via env (`EMAIL_FROM`, API
-      key). Keep the console fallback for local dev.
-- [ ] **Generate a fresh production `AUTH_SECRET`** (do not reuse the dev one).
-- [ ] Set **`AUTH_URL=https://whosin.team`** in production env.
-- [ ] After deploy, confirm the production session cookie works over HTTPS
-      (Auth.js uses the `__Secure-` cookie prefix on HTTPS automatically).
+- [x] **Sign up for an email sender** — used Resend.
+- [x] **Verify a sending domain** with Resend — used the subdomain
+      `contact.whosin.team` (not the root domain) and added its SPF/DKIM/DMARC
+      records at the registrar.
+- [x] **Replace the console `sendVerificationRequest`** in `src/auth.ts` —
+      ended up calling **Resend's HTTP API directly** (`fetch`), not SMTP:
+      Railway blocks outbound SMTP ports, which surfaced as connection
+      timeouts until the switch. Configured via `RESEND_API_KEY` + `EMAIL_FROM`.
+      Console fallback still used for local dev (when `RESEND_API_KEY` is unset).
+- [x] **Generate a fresh production `AUTH_SECRET`** (do not reuse the dev one).
+- [x] Set **`AUTH_URL=https://whosin.team`** in production env.
+- [x] After deploy, confirm the production session cookie works over HTTPS —
+      confirmed via a real magic-link login on `whosin.team`.
 
-### 4. Domain + DNS (whosin.team) 🔴
+### 4. Domain + DNS (whosin.team) 🔴 ✅ Done
 
-- [ ] **Add whosin.team as a custom domain** on the Railway app service; set the
-      **CNAME/A records** it gives you at your domain registrar.
-- [ ] Railway auto-provisions an **HTTPS certificate** (Let's Encrypt) for the
-      custom domain — verify it's active.
-- [ ] Add the **email DNS records** from step 3 (SPF/DKIM/DMARC) at the same
-      registrar.
+- [x] **Add whosin.team as a custom domain** on the Railway app service; set the
+      **CNAME/TXT records** it gave at the registrar (Namecheap). Watch for a
+      conflicting default "URL Redirect Record" on `@` — it blocks the CNAME
+      from resolving and needs to be deleted.
+- [x] Railway auto-provisions an **HTTPS certificate** (Let's Encrypt) for the
+      custom domain — verified active (`whosin.team` loads over HTTPS).
+- [x] Add the **email DNS records** from step 3 (SPF/DKIM/DMARC) at the same
+      registrar (under the `contact.` subdomain).
 
-### 5. Production env vars 🔴
+### 5. Production env vars 🔴 ✅ Done
 
-Set these on the Railway app service (mirror of `.env.example`):
+Set on the Railway app service:
 
-- [ ] `DATABASE_URL` (prod Postgres)
-- [ ] `AUTH_SECRET` (fresh, strong)
-- [ ] `AUTH_URL=https://whosin.team`
-- [ ] `EMAIL_FROM` + the email provider's API key/SMTP creds
+- [x] `DATABASE_URL` (prod Postgres, via variable reference)
+- [x] `AUTH_SECRET` (fresh, strong)
+- [x] `AUTH_URL=https://whosin.team`
+- [x] `EMAIL_FROM` + `RESEND_API_KEY` (HTTP API key, not SMTP creds —
+      `.env.example` reflects this)
 
 ### 6. Branding + PWA assets 🟡
 

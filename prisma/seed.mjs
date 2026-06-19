@@ -1,5 +1,18 @@
 import { PrismaClient } from "@prisma/client";
 
+// Destructive: wipes and replaces the roster. Refuse to run against anything
+// but localhost unless explicitly overridden, so a stray `npm run db:seed`
+// can't wipe a real coach's roster on staging/production.
+const dbHost = new URL(process.env.DATABASE_URL).hostname;
+const isLocal = dbHost === "localhost" || dbHost === "127.0.0.1";
+if (!isLocal && process.env.ALLOW_REMOTE_SEED !== "true") {
+  console.error(
+    `Refusing to seed non-local database (host: ${dbHost}). ` +
+      `Set ALLOW_REMOTE_SEED=true to override.`,
+  );
+  process.exit(1);
+}
+
 const db = new PrismaClient();
 
 // Re-runnable seed: resets the demo coach's roster to a known state.
