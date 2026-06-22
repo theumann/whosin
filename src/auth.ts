@@ -2,6 +2,7 @@ import NextAuth from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import Nodemailer from "next-auth/providers/nodemailer";
 import { db } from "@/lib/db";
+import { isRateLimited } from "@/lib/rateLimit";
 
 // Magic-link auth for the coach. Real email goes through Resend's HTTP API
 // (plain HTTPS — Railway blocks outbound SMTP ports) when RESEND_API_KEY is
@@ -29,6 +30,12 @@ async function sendViaResend(to: string, url: string) {
   }
 }
 
+// In-memory per-process cooldown — fine for a single Railway instance; would
+// need a shared store (e.g. Redis) if the app ever scales to multiple
+// instances.
+const MAGIC_LINK_COOLDOWN_MS = 60_000;
+const lastSentAt = new Map<string, number>();
+
 function logToConsole(identifier: string, url: string) {
   console.log(
     `\n================ MAGIC LOGIN LINK ================\n` +
@@ -51,6 +58,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       // Unused — sendVerificationRequest below bypasses SMTP entirely.
       server: { host: "", port: 0 },
       async sendVerificationRequest({ identifier, url }) {
+        const now = Date.now();
+        if (isRateLimited(lastSentAt.get(identifier), now, MAGIC_LINK_COOLDOWN_MS)) {
+          console.log(`Rate-limited magic-link request for ${identifier}, skipping send.`);
+          return;
+        }
+        lastSentAt.set(identifier, now);
+
         if (resendApiKey) {
           await sendViaResend(identifier, url);
         } else {

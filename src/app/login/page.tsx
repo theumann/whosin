@@ -43,6 +43,18 @@ export default async function LoginPage({
           Send magic link
         </button>
       </form>
+
+      <p className="mt-8 text-xs text-slate-400">
+        By signing in, you agree to our{" "}
+        <a className="underline" href="/terms">
+          Terms
+        </a>{" "}
+        and{" "}
+        <a className="underline" href="/privacy">
+          Privacy Policy
+        </a>
+        .
+      </p>
     </main>
   );
 }
