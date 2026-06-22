@@ -173,7 +173,7 @@ use it without this), 🟡 = needed for a credible launch, ⚪ = nice-to-have.
       service's env (Railway can inject it automatically). Wired via Railway's
       variable reference (`${{Postgres.DATABASE_URL}}`), the internal URL.
 - [x] **Decide on migrations:** took the documented shortcut — ran `prisma db
-    push` directly against the prod DB for the first deploy. **Now resolved:**
+push` directly against the prod DB for the first deploy. **Now resolved:**
       generated a baseline migration
       (`prisma/migrations/20260619214557_baseline`) from a diff against an
       empty schema, then marked it **applied** (not re-run, since the schema
@@ -282,17 +282,41 @@ laptop:
 
 ### 8. Things easy to forget ⚪🟡
 
-- [ ] **Privacy policy / basic terms** 🟡 — the app stores real people's names
-      and phone numbers (PII). A short privacy note covering what's stored and
-      how to request deletion is worth having, even pre-revenue.
-- [ ] **Error & not-found pages** ⚪ — a friendly `error.tsx` / `not-found.tsx`
-      instead of the default.
-- [ ] **Rate-limit the magic-link request** ⚪ — prevent someone spamming login
-      emails for an address.
-- [ ] **CI on PRs** ⚪ — a GitHub Actions workflow running lint + unit tests (and
-      optionally E2E with a Postgres service) before merge. Worth adding once
-      others touch the repo.
-- [ ] **Error monitoring / uptime** ⚪ — e.g. Sentry + a simple uptime check.
+- [x] **Privacy policy / basic terms** 🟡 — added `/privacy` and `/terms`
+      pages, linked from the sign-in page. Covers what's collected (coach
+      email for magic-link auth; player name/phone/email/notes entered by the
+      coach), that it's not sold/shared beyond the hosting (Railway) and email
+      (Resend) providers, and that deletion requests go to
+      `contact@whosin.team` and are handled manually for now. Terms include a
+      no-affiliation-with-WhatsApp disclaimer per the coexistence model in
+      `CLAUDE.md`. Not formal legal review — revisit with a lawyer before any
+      paid tier.
+- [x] **Error & not-found pages** ⚪ — added `src/app/error.tsx` (client
+      error boundary with a "Try again" button) and `src/app/not-found.tsx`,
+      matching the existing minimal page style.
+- [x] **Rate-limit the magic-link request** ⚪ — `src/auth.ts` now enforces a
+      60-second per-email cooldown in `sendVerificationRequest` (backed by
+      `isRateLimited` in `src/lib/rateLimit.ts`, unit-tested) before sending
+      another magic-link email. In-memory, so it resets on redeploy and only
+      holds for a single instance — revisit with a shared store (e.g. Redis)
+      if the app ever scales beyond one Railway instance.
+- [x] **CI on PRs** ⚪ — added `.github/workflows/ci.yml`: runs format check,
+      lint, typecheck, and unit tests on every PR into `main`. Deliberately
+      skips E2E for now (needs a Postgres service + more setup) — fine while
+      it's a single-developer repo; add it if/when others start contributing
+      or E2E coverage grows.
+- [x] **Error monitoring** ⚪ — wired `@sentry/nextjs`: `src/instrumentation.ts`
+      (server/edge) + `src/instrumentation-client.ts` (browser), both reading
+      `NEXT_PUBLIC_SENTRY_DSN` (not secret, so one var works for both sides).
+      `src/app/error.tsx` and the new `src/app/global-error.tsx` (catches
+      errors in the root layout itself) report via `Sentry.captureException`.
+      No source-map upload/build-time wrapping — kept minimal, just error
+      capture. Set `NEXT_PUBLIC_SENTRY_DSN` on the Railway staging + production
+      app services to activate; unset locally is fine (errors just won't
+      report in dev).
+- [ ] **Uptime check** ⚪ — still open: a simple external ping (e.g.
+      UptimeRobot's free tier) against `https://whosin.team` so you hear about
+      an outage instead of a coach telling you.
 - [ ] **Pre-launch smoke test on production** 🔴 — sign in with a real email,
       create a group, add the roster, create an event, and share to WhatsApp
       from a phone. This is the real go/no-go.
