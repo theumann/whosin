@@ -173,7 +173,7 @@ use it without this), 🟡 = needed for a credible launch, ⚪ = nice-to-have.
       service's env (Railway can inject it automatically). Wired via Railway's
       variable reference (`${{Postgres.DATABASE_URL}}`), the internal URL.
 - [x] **Decide on migrations:** took the documented shortcut — ran `prisma db
-    push` directly against the prod DB for the first deploy. **Now resolved:**
+push` directly against the prod DB for the first deploy. **Now resolved:**
       generated a baseline migration
       (`prisma/migrations/20260619214557_baseline`) from a diff against an
       empty schema, then marked it **applied** (not re-run, since the schema

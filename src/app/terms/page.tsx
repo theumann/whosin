@@ -10,16 +10,16 @@ export default function TermsPage() {
         <p>
           By signing in to or using the whosIn web app (the &quot;App&quot;) at whosin.team, you
           agree to these Terms of Service (&quot;Terms&quot;). If you don&apos;t agree, don&apos;t
-          use the App. We may update these Terms from time to time; we&apos;ll revise the
-          &quot;last updated&quot; date above when we do.
+          use the App. We may update these Terms from time to time; we&apos;ll revise the &quot;last
+          updated&quot; date above when we do.
         </p>
 
         <h2 className="text-lg font-semibold text-slate-900">1. Description of the service</h2>
         <p>
           whosIn helps a coach or organizer manage a roster, schedule events, and track
           attendance/confirmations for a sports team or group. It can compose a message for the
-          coach to share to the group&apos;s own WhatsApp chat via a &quot;Share to
-          WhatsApp&quot; link.
+          coach to share to the group&apos;s own WhatsApp chat via a &quot;Share to WhatsApp&quot;
+          link.
         </p>
 
         <h2 className="text-lg font-semibold text-slate-900">2. No affiliation with WhatsApp</h2>
@@ -64,15 +64,15 @@ export default function TermsPage() {
 
         <h2 className="text-lg font-semibold text-slate-900">7. Changes &amp; termination</h2>
         <p>
-          We may modify, suspend, or discontinue the App, or suspend an account that violates
-          these Terms, at any time.
+          We may modify, suspend, or discontinue the App, or suspend an account that violates these
+          Terms, at any time.
         </p>
 
         <h2 className="text-lg font-semibold text-slate-900">8. Governing law</h2>
         <p>
           These Terms are governed by the laws of the State of California, United States, without
-          regard to conflict-of-law rules. Disputes are subject to the exclusive jurisdiction of
-          the state and federal courts located in San Francisco County, California.
+          regard to conflict-of-law rules. Disputes are subject to the exclusive jurisdiction of the
+          state and federal courts located in San Francisco County, California.
         </p>
 
         <h2 className="text-lg font-semibold text-slate-900">9. Contact us</h2>

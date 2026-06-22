@@ -15,9 +15,8 @@ export default function PrivacyPage() {
 
         <h2 className="text-lg font-semibold text-slate-900">Information we collect</h2>
         <p>
-          <strong>Coach accounts.</strong> To sign in, a coach provides an email address. We use
-          it to send a magic sign-in link and to maintain a session; we don&apos;t require a
-          password.
+          <strong>Coach accounts.</strong> To sign in, a coach provides an email address. We use it
+          to send a magic sign-in link and to maintain a session; we don&apos;t require a password.
         </p>
         <p>
           <strong>Player and group data.</strong> A coach may enter information about players in
@@ -27,8 +26,8 @@ export default function PrivacyPage() {
         </p>
         <p>
           We do not sell player or coach data, or share it with third parties, except the service
-          providers that operate the App itself: our hosting provider (Railway) for the database
-          and application servers, and our email provider (Resend) for sending magic-link emails.
+          providers that operate the App itself: our hosting provider (Railway) for the database and
+          application servers, and our email provider (Resend) for sending magic-link emails.
         </p>
 
         <h2 className="text-lg font-semibold text-slate-900">How we use this information</h2>
@@ -40,8 +39,8 @@ export default function PrivacyPage() {
 
         <h2 className="text-lg font-semibold text-slate-900">Data retention &amp; deletion</h2>
         <p>
-          We retain data for as long as the associated group account is active. A coach or a
-          player whose information appears in the App may request deletion by emailing{" "}
+          We retain data for as long as the associated group account is active. A coach or a player
+          whose information appears in the App may request deletion by emailing{" "}
           <a className="text-sky-600 underline" href="mailto:contact@whosin.team">
             contact@whosin.team
           </a>
@@ -50,10 +49,10 @@ export default function PrivacyPage() {
 
         <h2 className="text-lg font-semibold text-slate-900">Children&apos;s privacy</h2>
         <p>
-          The App itself is not directed at or used directly by children — only coaches (who must
-          be adults) hold accounts. A coach may enter a player&apos;s name and contact details as
-          part of managing a youth team; coaches are responsible for having any consent required
-          to do so under applicable law.
+          The App itself is not directed at or used directly by children — only coaches (who must be
+          adults) hold accounts. A coach may enter a player&apos;s name and contact details as part
+          of managing a youth team; coaches are responsible for having any consent required to do so
+          under applicable law.
         </p>
 
         <h2 className="text-lg font-semibold text-slate-900">Changes to this policy</h2>
