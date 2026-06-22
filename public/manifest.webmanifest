@@ -1,6 +1,6 @@
 {
-  "name": "my-team",
-  "short_name": "my-team",
+  "name": "whosIn",
+  "short_name": "whosIn",
   "description": "Manage rosters, events, and WhatsApp updates for your team.",
   "start_url": "/",
   "display": "standalone",

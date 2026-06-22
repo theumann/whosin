@@ -8,6 +8,7 @@ function Field({
   type = "text",
   required = false,
   placeholder,
+  hint,
 }: {
   name: string;
   label: string;
@@ -15,6 +16,7 @@ function Field({
   type?: string;
   required?: boolean;
   placeholder?: string;
+  hint?: string;
 }) {
   return (
     <label className={labelClass}>
@@ -28,6 +30,7 @@ function Field({
         placeholder={placeholder}
         className={`${fieldClass} mt-1`}
       />
+      {hint ? <span className="mt-1 block text-xs text-slate-500">{hint}</span> : null}
     </label>
   );
 }
@@ -58,6 +61,7 @@ export function PlayerForm({
         label="Skill / style bucket"
         defaultValue={player?.skillBucket}
         placeholder="e.g. A, defender, beginner"
+        hint="Optional — for team picking in a soon-coming version of the app."
       />
       <label className={`${labelClass} flex items-center gap-2`}>
         <input name="injured" type="checkbox" defaultChecked={player?.injured ?? false} />

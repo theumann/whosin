@@ -173,7 +173,7 @@ use it without this), 🟡 = needed for a credible launch, ⚪ = nice-to-have.
       service's env (Railway can inject it automatically). Wired via Railway's
       variable reference (`${{Postgres.DATABASE_URL}}`), the internal URL.
 - [x] **Decide on migrations:** took the documented shortcut — ran `prisma db
-      push` directly against the prod DB for the first deploy. **Now resolved:**
+    push` directly against the prod DB for the first deploy. **Now resolved:**
       generated a baseline migration
       (`prisma/migrations/20260619214557_baseline`) from a diff against an
       empty schema, then marked it **applied** (not re-run, since the schema
@@ -252,9 +252,11 @@ Set on the Railway app service:
 
 ### 6. Branding + PWA assets 🟡
 
-- [ ] **Rename the app from "my-team" to the brand** (WhosIn / whosin.team):
-      update `metadata.title`, the home page heading, and
-      `public/manifest.webmanifest` (`name`, `short_name`, `theme_color`).
+- [x] **Rename the app from "my-team" to the brand** (whosIn / whosin.team):
+      updated `metadata.title`, the home page heading, and
+      `public/manifest.webmanifest` (`name`, `short_name`). `theme_color`
+      still uses the placeholder slate — revisit once a brand color is
+      picked alongside the logo.
 - [ ] **Create a logo + app icons.** The manifest references
       `public/icon-192.png` and `public/icon-512.png` which **don't exist yet**;
       also add a `favicon` and an `apple-touch-icon`. (Tools for the logo:

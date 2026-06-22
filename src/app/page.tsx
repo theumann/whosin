@@ -20,7 +20,7 @@ export default async function Home() {
 
   return (
     <main className="mx-auto max-w-xl px-6 py-8">
-      <h1 className="mb-1 text-2xl font-bold">my-team</h1>
+      <h1 className="mb-1 text-2xl font-bold">whosIn</h1>
       <p className="mt-0 text-slate-500">
         Rosters, events, and one-tap WhatsApp updates — for the coach.
       </p>

@@ -6,7 +6,7 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
-  title: "my-team",
+  title: "whosIn",
   description: "Manage rosters, events, and WhatsApp updates for your team.",
   manifest: "/manifest.webmanifest",
 };
