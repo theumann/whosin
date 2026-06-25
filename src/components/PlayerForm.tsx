@@ -51,8 +51,8 @@ export function PlayerForm({
         name="phone"
         label="Phone / WhatsApp"
         defaultValue={player?.phone}
-        required
         placeholder="+1 555 123 4567"
+        hint="Optional — not used to send anything today."
       />
       <Field name="lastName" label="Last name" defaultValue={player?.lastName} />
       <Field name="email" label="Email" type="email" defaultValue={player?.email} />

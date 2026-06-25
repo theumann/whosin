@@ -109,7 +109,7 @@ model Player {
   group       Group        @relation(fields: [groupId], references: [id], onDelete: Cascade)
   groupId     String
   firstName   String
-  phone       String
+  phone       String?
   lastName    String?
   email       String?
   skillBucket String? // seed for assisted squad-shuffling later
