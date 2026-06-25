@@ -62,7 +62,7 @@ export default async function RosterPage({
                     {p.lastName ? ` ${p.lastName}` : ""}
                   </strong>
                   {p.injured ? <span className="ml-2 text-sm text-orange-600">injured</span> : null}
-                  <div className="text-sm text-slate-400">{p.phone}</div>
+                  {p.phone ? <div className="text-sm text-slate-400">{p.phone}</div> : null}
                 </div>
                 <div className="flex items-center gap-3">
                   <Link

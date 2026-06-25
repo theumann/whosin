@@ -17,7 +17,7 @@ import {
 function parse(formData: FormData): PlayerInput {
   return {
     firstName: String(formData.get("firstName") ?? ""),
-    phone: String(formData.get("phone") ?? ""),
+    phone: str(formData.get("phone")),
     lastName: str(formData.get("lastName")),
     email: str(formData.get("email")),
     skillBucket: str(formData.get("skillBucket")),

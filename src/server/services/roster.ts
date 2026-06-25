@@ -1,12 +1,15 @@
 import { db } from "@/lib/db";
 
 // Roster domain logic. Route handlers / server actions stay thin and call into
-// here, keeping a clean API boundary (see CLAUDE.md). firstName + phone are the
-// only required fields; everything else is optional.
+// here, keeping a clean API boundary (see CLAUDE.md). firstName is the only
+// required field; everything else, including phone, is optional — a player's
+// phone number isn't needed today (broadcasts go to the group's existing
+// WhatsApp chat, not individual numbers) and is PII for someone who hasn't
+// opted in to the app.
 
 export type PlayerInput = {
   firstName: string;
-  phone: string;
+  phone?: string | null;
   lastName?: string | null;
   email?: string | null;
   skillBucket?: string | null;
@@ -17,7 +20,6 @@ export type PlayerInput = {
 export function validatePlayerInput(input: PlayerInput): string[] {
   const errors: string[] = [];
   if (!input.firstName.trim()) errors.push("First name is required.");
-  if (!input.phone.trim()) errors.push("Phone is required.");
   return errors;
 }
 
@@ -47,7 +49,7 @@ export function deletePlayer(groupId: string, id: string) {
 function normalize(input: PlayerInput) {
   return {
     firstName: input.firstName.trim(),
-    phone: input.phone.trim(),
+    phone: clean(input.phone),
     lastName: clean(input.lastName),
     email: clean(input.email),
     skillBucket: clean(input.skillBucket),
