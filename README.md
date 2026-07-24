@@ -310,10 +310,13 @@ laptop:
       `NEXT_PUBLIC_SENTRY_DSN` (not secret, so one var works for both sides).
       `src/app/error.tsx` and the new `src/app/global-error.tsx` (catches
       errors in the root layout itself) report via `Sentry.captureException`.
-      No source-map upload/build-time wrapping — kept minimal, just error
-      capture. Set `NEXT_PUBLIC_SENTRY_DSN` on the Railway staging + production
-      app services to activate; unset locally is fine (errors just won't
-      report in dev).
+      `next.config.ts` wraps the config with `withSentryConfig` so production
+      builds upload source maps (needs `SENTRY_AUTH_TOKEN`, scope
+      `project:releases`, set on Railway) and strip them from the shipped
+      client bundle. Set `NEXT_PUBLIC_SENTRY_DSN` and `SENTRY_AUTH_TOKEN` on
+      the Railway staging + production app services to activate; both unset
+      locally is fine (errors just won't report and the build skips source
+      map upload in dev).
 - [ ] **Uptime check** ⚪ — still open: a simple external ping (e.g.
       UptimeRobot's free tier) against `https://whosin.team` so you hear about
       an outage instead of a coach telling you.
