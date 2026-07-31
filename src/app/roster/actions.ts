@@ -30,6 +30,21 @@ function str(value: FormDataEntryValue | null): string | null {
   return value == null ? null : String(value);
 }
 
+export type AddPlayerResult = { error: string } | { ok: true } | null;
+
+export async function addPlayerModalAction(
+  _prev: AddPlayerResult,
+  formData: FormData,
+): Promise<AddPlayerResult> {
+  const input = parse(formData);
+  const errors = validatePlayerInput(input);
+  if (errors.length) return { error: errors.join(" ") };
+  const groupId = await getCurrentGroupId();
+  await createPlayer(groupId, input);
+  revalidatePath("/roster");
+  return { ok: true };
+}
+
 export async function addPlayerAction(formData: FormData) {
   const input = parse(formData);
   const errors = validatePlayerInput(input);

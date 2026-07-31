@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { signIn } from "@/auth";
 import { btnPrimary, errorBanner, fieldClass } from "@/lib/ui";
 
@@ -12,7 +13,10 @@ export default async function LoginPage({
 
   return (
     <main className="mx-auto max-w-md px-6 py-12">
-      <h1 className="mb-1 text-2xl font-bold">Sign in</h1>
+      <div className="mb-6 flex justify-center">
+        <Image src="/logo.png" alt="whosIn" width={144} height={48} priority />
+      </div>
+      <h1 className="mb-1 text-[22px] font-bold">Sign in</h1>
       <p className="mt-0 text-slate-500">Enter your email and we&apos;ll send you a magic link.</p>
 
       {error ? (
@@ -24,7 +28,7 @@ export default async function LoginPage({
           "use server";
           await signIn("nodemailer", {
             email: String(formData.get("email") ?? ""),
-            redirectTo: "/roster",
+            redirectTo: "/",
           });
         }}
         className="mt-4"

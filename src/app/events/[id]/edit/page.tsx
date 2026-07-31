@@ -30,7 +30,7 @@ export default async function EditEventPage({
       >
         <ArrowLeft size={16} /> Back to event
       </Link>
-      <h1 className="text-2xl font-bold">Edit event</h1>
+      <h1 className="text-[22px] font-bold">Edit event</h1>
 
       {error ? <p className={`${errorBanner} mb-4`}>{error}</p> : null}
 

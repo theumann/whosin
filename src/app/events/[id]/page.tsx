@@ -15,6 +15,7 @@ import {
   type EventMessageData,
 } from "@/lib/messages";
 import { WhatsAppComposer } from "@/components/WhatsAppComposer";
+import { StatusSelect } from "./StatusSelect";
 import {
   deleteEventAction,
   deleteSeriesAction,
@@ -80,7 +81,7 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
         <ArrowLeft size={16} /> Events
       </Link>
 
-      <h1 className="mb-1 flex items-center gap-2.5 text-2xl font-bold">
+      <h1 className="mb-1 mt-4 flex items-center gap-2.5 text-[22px] font-bold">
         {dateFmt.format(event.startsAt)}
         {event.seriesId ? (
           <span
@@ -98,7 +99,7 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
       {/* Capacity indicator + per-status counts */}
       <div className="my-4 flex flex-wrap items-baseline gap-4">
         <span
-          className={`text-2xl font-bold ${overCapacity ? "text-red-600" : "text-emerald-600"}`}
+          className={`text-[22px] font-bold ${overCapacity ? "text-red-600" : "text-emerald-600"}`}
         >
           {inCount}
           {event.capacity != null ? ` / ${event.capacity}` : ""} in
@@ -120,7 +121,7 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
         </Link>
         <form action={setCanceledAction.bind(null, event.id, !event.canceledAt)}>
           <button type="submit" className={btnWarning}>
-            {event.canceledAt ? "Un-cancel" : "Cancel game"}
+            {event.canceledAt ? "Un-cancel" : "Cancel event"}
           </button>
         </form>
         <form action={deleteEventAction.bind(null, event.id)}>
@@ -181,7 +182,7 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
       <ul className="m-0 list-none p-0">
         {event.entries.map((entry) => (
           <li key={entry.id} className="border-b border-slate-200 py-2.5">
-            <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center justify-between gap-3">
               <span>
                 <strong>{entry.player.firstName}</strong>
                 {entry.player.lastName ? ` ${entry.player.lastName}` : ""}
@@ -194,34 +195,10 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
                   </span>
                 ) : null}
               </span>
-              <form
+              <StatusSelect
+                current={entry.status}
                 action={setStatusAction.bind(null, event.id, entry.playerId)}
-                className="flex gap-1"
-              >
-                {STATUS_ORDER.map((s) => {
-                  const active = entry.status === s;
-                  return (
-                    <button
-                      key={s}
-                      type="submit"
-                      name="status"
-                      value={s}
-                      style={{
-                        borderColor: active ? STATUS_COLORS[s] : undefined,
-                        background: active ? STATUS_COLORS[s] : undefined,
-                        color: active ? "#ffffff" : undefined,
-                      }}
-                      className={`cursor-pointer rounded-md border px-2 py-1 text-xs font-bold transition-colors ${
-                        active
-                          ? ""
-                          : "border-slate-300 bg-white font-normal text-slate-500 hover:border-slate-400 hover:text-slate-900"
-                      }`}
-                    >
-                      {STATUS_LABELS[s]}
-                    </button>
-                  );
-                })}
-              </form>
+              />
             </div>
 
             {/* Squad assignment — only for In players */}
@@ -279,7 +256,7 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
         ) : null}
         <WhatsAppComposer header={headerText} roster={rosterBody} squad={squadBody} />
         <p className="mt-2.5 text-sm text-slate-400">
-          Opens WhatsApp with the message ready — pick your group and send.
+          Opens WhatsApp when the message is ready - pick your group and send.
         </p>
       </section>
     </main>

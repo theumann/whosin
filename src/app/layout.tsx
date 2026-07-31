@@ -7,7 +7,7 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
   title: "whosIn",
-  description: "Manage rosters, events, and WhatsApp updates for your team.",
+  description: "Event Attendance Management and WhatsApp Group Notifications",
   manifest: "/manifest.webmanifest",
 };
 

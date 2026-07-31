@@ -76,12 +76,16 @@ fight. Run `npm run format` before committing; `npm run lint` enforces quality.
 Our layered design concentrates the valuable logic in pure, easily-tested
 places. We invest where bugs actually live, in order of value-per-effort:
 
-| Layer                                                                       | Test type                                      | Status                   |
-| --------------------------------------------------------------------------- | ---------------------------------------------- | ------------------------ |
-| `lib/` pure functions (message formatting, status labels, validation)       | **Unit** (Vitest) — no DB, no browser          | ✅ in place              |
-| `server/services` (createEvent seeding, ensureEntries, status/squad writes) | **Integration** (Vitest + a test Postgres)     | ⏳ planned               |
-| Client components (`WhatsAppComposer`, `DateTimeInput`)                     | **Component** (Vitest + React Testing Library) | ⏳ later                 |
-| Full flows (create event → mark In → share)                                 | **E2E** (Playwright)                           | ✅ in place (happy path) |
+| Layer                                                                       | Test type                                      | Status      |
+| --------------------------------------------------------------------------- | ---------------------------------------------- | ----------- |
+| `lib/` pure functions (message formatting, status labels, validation)       | **Unit** (Vitest) — no DB, no browser          | ✅ in place |
+| `server/services` (createEvent seeding, ensureEntries, status/squad writes) | **Integration** (Vitest + a test Postgres)     | ⏳ planned  |
+| Client components (`WhatsAppComposer`, `DateTimeInput`)                     | **Component** (Vitest + React Testing Library) | ⏳ later    |
+| Full flows (create event → mark In → share)                                 | **E2E** (Playwright)                           | ✅ in place |
+| Auth (redirect unauthenticated, login, session)                             | **E2E** (Playwright)                           | ✅ in place |
+| Roster page (add player modal, delete confirmation)                         | **E2E** (Playwright)                           | ✅ in place |
+| Events page (tabs, pagination, create modal, FAB)                           | **E2E** (Playwright)                           | ✅ in place |
+| Navigation (logo links, pencil icon hrefs)                                  | **E2E** (Playwright)                           | ✅ in place |
 
 ### Principles
 

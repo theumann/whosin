@@ -52,7 +52,7 @@ export function PlayerForm({
         label="Phone / WhatsApp"
         defaultValue={player?.phone}
         placeholder="+1 555 123 4567"
-        hint="Optional — not used to send anything today."
+        hint="Optional - not used to send anything today."
       />
       <Field name="lastName" label="Last name" defaultValue={player?.lastName} />
       <Field name="email" label="Email" type="email" defaultValue={player?.email} />
@@ -61,7 +61,7 @@ export function PlayerForm({
         label="Skill / style bucket"
         defaultValue={player?.skillBucket}
         placeholder="e.g. A, defender, beginner"
-        hint="Optional — for team picking in a soon-coming version of the app."
+        hint="Optional - for team picking in a soon-coming version of the app."
       />
       <label className={`${labelClass} flex items-center gap-2`}>
         <input name="injured" type="checkbox" defaultChecked={player?.injured ?? false} />

@@ -25,7 +25,7 @@ const dateFmt = new Intl.DateTimeFormat("en-US", {
 });
 
 function header(d: EventMessageData): string {
-  let h = `${d.groupName} — ${dateFmt.format(d.startsAt)}`;
+  let h = `${d.groupName} - ${dateFmt.format(d.startsAt)}`;
   if (d.location) h += ` @ ${d.location}`;
   return h;
 }

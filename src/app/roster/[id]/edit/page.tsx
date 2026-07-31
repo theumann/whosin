@@ -27,7 +27,7 @@ export default async function EditPlayerPage({
       <Link href="/roster" className={`inline-flex items-center gap-1 text-sm ${linkAccent}`}>
         <ArrowLeft size={16} /> Roster
       </Link>
-      <h1 className="text-2xl font-bold">
+      <h1 className="text-[22px] font-bold">
         Edit {player.firstName}
         {player.lastName ? ` ${player.lastName}` : ""}
       </h1>

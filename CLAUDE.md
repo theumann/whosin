@@ -67,7 +67,22 @@ We're starting as a web-first PWA (Next.js). A PWA can later be wrapped in a nat
 
 ## Conventions
 
-(To be filled in as patterns are chosen.)
+### Create/add forms → modals
+
+New-record forms (create event, add player) live in client-component modals, not inline on the page. The pattern:
+
+- A `"use client"` modal component holds open/close state and a `useActionState` hook.
+- The corresponding server action returns `{ error: string } | { ok: true; ... } | null` instead of redirecting, so errors display inline without closing the modal.
+- On success the modal closes and calls `router.refresh()` (or `router.push()` for a new-record detail page).
+- A FAB (`fixed bottom-20 right-4`) mirrors the above-list button on mobile.
+
+### Destructive actions → confirmation modals
+
+Delete buttons open a small centered confirmation modal before submitting. Client component holds open/close state; the actual delete is a plain form action inside the modal.
+
+### Event date formatting
+
+`src/lib/dateFormat.ts` exports `formatEventDate(date, currentYear)` — omits the year when it matches `currentYear`, includes it otherwise. Use this everywhere events are listed.
 
 ## Notes for Claude
 

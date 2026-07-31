@@ -55,6 +55,33 @@ function parseSeries(formData: FormData): SeriesInput {
   };
 }
 
+export type AddEventResult = { error: string } | { ok: true; eventId?: string } | null;
+
+// Modal variant: returns errors inline instead of redirecting, so the modal
+// can display them without closing.
+export async function addEventModalAction(
+  _prev: AddEventResult,
+  formData: FormData,
+): Promise<AddEventResult> {
+  const groupId = await getCurrentGroupId();
+
+  if (formData.get("recurring") === "on") {
+    const input = parseSeries(formData);
+    const errors = validateSeriesInput(input);
+    if (errors.length) return { error: errors.join(" ") };
+    await createSeries(groupId, input);
+    revalidatePath("/events");
+    return { ok: true };
+  }
+
+  const input = parse(formData);
+  const errors = validateEventInput(input);
+  if (errors.length) return { error: errors.join(" ") };
+  const event = await createEvent(groupId, input);
+  revalidatePath("/events");
+  return { ok: true, eventId: event.id };
+}
+
 export async function addEventAction(formData: FormData) {
   const groupId = await getCurrentGroupId();
 

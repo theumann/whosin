@@ -25,12 +25,12 @@ const base: EventMessageData = {
 
 describe("buildHeader", () => {
   it("includes group, formatted date, and location", () => {
-    expect(buildHeader(base)).toBe("Thursday Night Soccer — Thu, Jun 25, 7:00 PM @ Riverside Park");
+    expect(buildHeader(base)).toBe("Thursday Night Soccer - Thu, Jun 25, 7:00 PM @ Riverside Park");
   });
 
   it("omits the location separator when there is no location", () => {
     const h = buildHeader({ ...base, location: null });
-    expect(h).toBe("Thursday Night Soccer — Thu, Jun 25, 7:00 PM");
+    expect(h).toBe("Thursday Night Soccer - Thu, Jun 25, 7:00 PM");
     expect(h).not.toContain("@");
   });
 });
