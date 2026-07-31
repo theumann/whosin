@@ -15,7 +15,7 @@ export default function GlobalError({ error }: { error: Error & { digest?: strin
       <body>
         <main style={{ maxWidth: "28rem", margin: "0 auto", padding: "3rem 1.5rem" }}>
           <h1>Something went wrong</h1>
-          <p>Sorry about that — please refresh the page.</p>
+          <p>Sorry about that! Please refresh the page.</p>
         </main>
       </body>
     </html>

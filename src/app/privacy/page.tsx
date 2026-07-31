@@ -1,9 +1,15 @@
-export const metadata = { title: "Privacy Policy — whosIn" };
+import Image from "next/image";
+import Link from "next/link";
+
+export const metadata = { title: "Privacy Policy - whosIn" };
 
 export default function PrivacyPage() {
   return (
     <main className="mx-auto max-w-xl px-6 py-12">
-      <h1 className="text-2xl font-bold">Privacy Policy</h1>
+      <Link href="/" aria-label="Home">
+        <Image src="/logo.png" alt="whosIn" width={120} height={40} priority />
+      </Link>
+      <h1 className="mt-4 text-[22px] font-bold">Privacy Policy</h1>
       <p className="mt-1 text-sm text-slate-500">Last updated: June 22, 2026</p>
 
       <section className="mt-6 space-y-4 text-slate-700">
@@ -20,9 +26,9 @@ export default function PrivacyPage() {
         </p>
         <p>
           <strong>Player and group data.</strong> A coach may enter information about players in
-          their group — name, phone number, optional email, and optional notes (such as a skill
-          bucket or injury status) — in order to manage rosters, events, and attendance. This data
-          is entered and controlled by the coach, not self-registered by players.
+          their group - name, phone number, optional email, and optional notes (such as a skill
+          bucket or injury status) in order to manage rosters, events, and attendance. This data is
+          entered and controlled by the coach, not self-registered by players.
         </p>
         <p>
           We do not sell player or coach data, or share it with third parties, except the service
@@ -49,7 +55,7 @@ export default function PrivacyPage() {
 
         <h2 className="text-lg font-semibold text-slate-900">Children&apos;s privacy</h2>
         <p>
-          The App itself is not directed at or used directly by children — only coaches (who must be
+          The App itself is not directed at or used directly by children. Only coaches (who must be
           adults) hold accounts. A coach may enter a player&apos;s name and contact details as part
           of managing a youth team; coaches are responsible for having any consent required to do so
           under applicable law.

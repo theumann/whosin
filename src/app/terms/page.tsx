@@ -1,9 +1,15 @@
-export const metadata = { title: "Terms of Service — whosIn" };
+import Image from "next/image";
+import Link from "next/link";
+
+export const metadata = { title: "Terms of Service - whosIn" };
 
 export default function TermsPage() {
   return (
     <main className="mx-auto max-w-xl px-6 py-12">
-      <h1 className="text-2xl font-bold">Terms of Service</h1>
+      <Link href="/" aria-label="Home">
+        <Image src="/logo.png" alt="whosIn" width={120} height={40} priority />
+      </Link>
+      <h1 className="mt-4 text-[22px] font-bold">Terms of Service</h1>
       <p className="mt-1 text-sm text-slate-500">Last updated: June 22, 2026</p>
 
       <section className="mt-6 space-y-4 text-slate-700">

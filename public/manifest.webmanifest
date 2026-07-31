@@ -1,7 +1,7 @@
 {
   "name": "whosIn",
   "short_name": "whosIn",
-  "description": "Manage rosters, events, and WhatsApp updates for your team.",
+  "description": "Event Attendance Management and WhatsApp Group Notifications",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0f172a",

@@ -5,6 +5,9 @@ import { test, expect } from "@playwright/test";
 test("create a weekly recurring series and see all occurrences", async ({ page }) => {
   await page.goto("/events");
 
+  // Open the create event modal.
+  await page.getByRole("button", { name: "Create Event", exact: true }).click();
+
   // First occurrence: Tue Sep 1, 2026 @ 7pm.
   await page.locator('input[name="startsAt"]').fill("2026-09-01T19:00");
 
@@ -13,7 +16,7 @@ test("create a weekly recurring series and see all occurrences", async ({ page }
   await page.locator('input[name="intervalWeeks"]').fill("1");
   await page.locator('input[name="endDate"]').fill("2026-09-22");
 
-  await page.getByRole("button", { name: "Create event" }).click();
+  await page.getByRole("dialog").getByRole("button", { name: "Create event" }).click();
 
   // Back on the events list, all four occurrences carry the recurring indicator.
   await expect(page.getByTitle("Part of a recurring series")).toHaveCount(4);

@@ -17,9 +17,9 @@ export default function ErrorPage({
 
   return (
     <main className="mx-auto max-w-md px-6 py-12">
-      <h1 className="text-2xl font-bold">Something went wrong</h1>
+      <h1 className="text-[22px] font-bold">Something went wrong</h1>
       <p className="mt-1 text-slate-500">
-        Sorry about that — give it another try, or come back in a moment.
+        Sorry about that! Please give it another try, or come back in a moment.
       </p>
       <button type="button" onClick={reset} className={`${btnSecondary} mt-4`}>
         Try again

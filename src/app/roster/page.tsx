@@ -1,11 +1,12 @@
+import Image from "next/image";
 import Link from "next/link";
-import { House, LogOut, Pencil, Trash2 } from "lucide-react";
+import { LogOut, Pencil } from "lucide-react";
 import { signOut } from "@/auth";
 import { getCurrentGroupId } from "@/server/coach";
 import { listPlayers } from "@/server/services/roster";
-import { PlayerForm } from "@/components/PlayerForm";
-import { addPlayerAction, deletePlayerAction } from "./actions";
-import { btnDanger, btnSecondary, errorBanner, linkAccent } from "@/lib/ui";
+import { AddPlayerModal } from "./AddPlayerModal";
+import { DeletePlayerButton } from "./DeletePlayerButton";
+import { btnSecondary, errorBanner, linkAccent } from "@/lib/ui";
 
 export const dynamic = "force-dynamic";
 
@@ -21,8 +22,8 @@ export default async function RosterPage({
   return (
     <main className="mx-auto max-w-2xl px-6 py-8">
       <div className="flex items-center justify-between">
-        <Link href="/" aria-label="Home" className={`inline-flex items-center ${linkAccent}`}>
-          <House size={20} />
+        <Link href="/" aria-label="Home">
+          <Image src="/logo.png" alt="whosIn" width={120} height={40} priority />
         </Link>
         <form
           action={async () => {
@@ -35,7 +36,7 @@ export default async function RosterPage({
           </button>
         </form>
       </div>
-      <h1 className="mb-1 text-2xl font-bold">Roster</h1>
+      <h1 className="mb-1 mt-4 text-[22px] font-bold">Roster</h1>
       <p className="mt-0 text-slate-500">
         {players.length} {players.length === 1 ? "player" : "players"}
         {" · "}
@@ -46,9 +47,13 @@ export default async function RosterPage({
 
       {error ? <p className={`${errorBanner} mt-4`}>{error}</p> : null}
 
-      <section className="mt-6">
+      <div className="mt-6 flex justify-end">
+        <AddPlayerModal />
+      </div>
+
+      <section className="mt-3">
         {players.length === 0 ? (
-          <p className="text-slate-400">No players yet. Add your first below.</p>
+          <p className="text-slate-400">No players yet. Add your first with the button above.</p>
         ) : (
           <ul className="m-0 list-none p-0">
             {players.map((p) => (
@@ -71,21 +76,15 @@ export default async function RosterPage({
                   >
                     <Pencil size={14} /> Edit
                   </Link>
-                  <form action={deletePlayerAction.bind(null, p.id)}>
-                    <button type="submit" className={btnDanger}>
-                      <Trash2 size={14} /> Delete
-                    </button>
-                  </form>
+                  <DeletePlayerButton
+                    id={p.id}
+                    name={[p.firstName, p.lastName].filter(Boolean).join(" ")}
+                  />
                 </div>
               </li>
             ))}
           </ul>
         )}
-      </section>
-
-      <section className="mt-8">
-        <h2 className="text-lg font-semibold">Add a player</h2>
-        <PlayerForm action={addPlayerAction} submitLabel="Add player" />
       </section>
     </main>
   );

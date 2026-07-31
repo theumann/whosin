@@ -45,6 +45,19 @@ export default async function globalSetup() {
     await db.player.deleteMany({ where: { groupId } });
     await db.player.createMany({ data: PLAYERS.map((p) => ({ ...p, groupId })) });
 
+    // Seed one future event so pages that list upcoming events have something to show.
+    const futureEvent = await db.event.create({
+      data: { groupId, startsAt: new Date("2027-06-01T19:00:00Z"), capacity: 10 },
+    });
+    const players = await db.player.findMany({ where: { groupId }, select: { id: true } });
+    await db.eventEntry.createMany({
+      data: players.map((p) => ({
+        eventId: futureEvent.id,
+        playerId: p.id,
+        status: "DEFAULT" as const,
+      })),
+    });
+
     // Create a DB session and persist the auth cookie for Playwright.
     const sessionToken = randomBytes(32).toString("hex");
     const expires = new Date(Date.now() + 24 * 60 * 60 * 1000);

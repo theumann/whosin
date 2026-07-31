@@ -44,6 +44,29 @@ export function listUpcomingEvents(groupId: string, limit: number) {
   });
 }
 
+const eventInclude = { entries: { select: { status: true } } } as const;
+
+// Fetches one extra record beyond `take` so the caller can detect a next page.
+export function listUpcomingEventsPaged(groupId: string, skip: number, take: number) {
+  return db.event.findMany({
+    where: { groupId, startsAt: { gte: new Date() } },
+    orderBy: { startsAt: "asc" },
+    skip,
+    take: take + 1,
+    include: eventInclude,
+  });
+}
+
+export function listPastEventsPaged(groupId: string, skip: number, take: number) {
+  return db.event.findMany({
+    where: { groupId, startsAt: { lt: new Date() } },
+    orderBy: { startsAt: "desc" },
+    skip,
+    take: take + 1,
+    include: eventInclude,
+  });
+}
+
 export async function createEvent(groupId: string, input: EventInput) {
   const event = await db.event.create({
     data: {

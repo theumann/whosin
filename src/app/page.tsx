@@ -1,8 +1,9 @@
+import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Pencil } from "lucide-react";
 import { getCurrentGroupId } from "@/server/coach";
 import { listUpcomingEvents } from "@/server/services/events";
-import { linkAccent } from "@/lib/ui";
+import { btnSecondary, linkAccent } from "@/lib/ui";
 
 export const dynamic = "force-dynamic";
 
@@ -20,10 +21,19 @@ export default async function Home() {
 
   return (
     <main className="mx-auto max-w-xl px-6 py-8">
-      <h1 className="mb-1 text-2xl font-bold">whosIn</h1>
+      <Image src="/logo.png" alt="whosIn" width={120} height={40} className="mb-1" priority />
       <p className="mt-0 text-slate-500">
-        Rosters, events, and one-tap WhatsApp updates — for the coach.
+        Event Attendance Management and WhatsApp Group Notifications
       </p>
+
+      <div className="mt-6 flex gap-3">
+        <Link href="/events" className={`${btnSecondary} font-semibold`}>
+          Manage Events
+        </Link>
+        <Link href="/roster" className={`${btnSecondary} font-semibold`}>
+          Manage Roster
+        </Link>
+      </div>
 
       <section className="mt-8">
         <h2 className="text-lg font-semibold">Upcoming events</h2>
@@ -35,21 +45,27 @@ export default async function Home() {
               const inCount = e.entries.filter((x) => x.status === "IN").length;
               return (
                 <li key={e.id} className="border-b border-slate-200 py-2.5 last:border-b-0">
-                  <Link
-                    href={`/events/${e.id}`}
-                    className="flex items-center justify-between gap-3"
-                  >
-                    <div>
+                  <div className="flex items-center justify-between gap-3">
+                    <Link href={`/events/${e.id}`} className="flex-1">
                       <strong className="text-slate-900">{dateFmt.format(e.startsAt)}</strong>
                       {e.location ? (
                         <div className="text-sm text-slate-400">{e.location}</div>
                       ) : null}
+                    </Link>
+                    <div className="flex items-center gap-3">
+                      <span className="whitespace-nowrap text-sm text-slate-500">
+                        {inCount}
+                        {e.capacity != null ? ` / ${e.capacity}` : ""} in
+                      </span>
+                      <Link
+                        href={`/events/${e.id}`}
+                        aria-label="View event"
+                        className="text-slate-400 transition-colors hover:text-indigo-600"
+                      >
+                        <Pencil size={15} />
+                      </Link>
                     </div>
-                    <span className="whitespace-nowrap text-sm text-slate-500">
-                      {inCount}
-                      {e.capacity != null ? ` / ${e.capacity}` : ""} in
-                    </span>
-                  </Link>
+                  </div>
                 </li>
               );
             })}

@@ -41,7 +41,7 @@ const PLAYERS = [
     phone: "+15550106",
     skillBucket: "B",
     injured: true,
-    notes: "Ankle — out a few weeks",
+    notes: "Ankle - out a few weeks",
   },
   { firstName: "Omar", lastName: "Haddad", phone: "+15550107", skillBucket: "C" },
   { firstName: "Tom", lastName: "Becker", phone: "+15550108", skillBucket: "C" },

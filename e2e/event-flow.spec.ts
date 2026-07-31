@@ -8,17 +8,21 @@ test("create event, mark a player In, see it reflected in the WhatsApp message",
   await page.goto("/events");
   await expect(page.getByRole("heading", { name: "Events" })).toBeVisible();
 
+  // Open the create event modal.
+  await page.getByRole("button", { name: "Create Event", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Create an event" })).toBeVisible();
+
   // Create an event (capacity 10).
-  await page.locator('input[name="startsAt"]').fill("2026-07-15T19:00");
+  await page.locator('input[name="startsAt"]').fill("2027-08-15T19:00");
   await page.locator('input[name="capacity"]').fill("10");
-  await page.getByRole("button", { name: "Create event" }).click();
+  await page.getByRole("dialog").getByRole("button", { name: "Create event" }).click();
 
   // Lands on the event status screen.
   await page.waitForURL(/\/events\/.+/);
 
   // Mark Alpha "In".
   const alphaRow = page.locator("li").filter({ hasText: "Alpha" }).first();
-  await alphaRow.getByRole("button", { name: "In", exact: true }).click();
+  await alphaRow.locator("select[name='status']").selectOption("IN");
 
   // Capacity indicator updates to 1 / 10.
   await expect(page.getByText(/1\s*\/\s*10 in/)).toBeVisible();
