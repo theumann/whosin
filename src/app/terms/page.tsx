@@ -32,7 +32,7 @@ export default function TermsPage() {
         <p>
           whosIn is not affiliated with, endorsed by, or sponsored by WhatsApp or Meta. The
           &quot;Share to WhatsApp&quot; feature only opens a pre-filled message in WhatsApp via a
-          standard wa.me link; sending happens entirely through your own WhatsApp account.
+          standard WhatsApp deep link; sending happens entirely through your own WhatsApp account.
         </p>
 
         <h2 className="text-lg font-semibold text-slate-900">3. Eligibility &amp; accounts</h2>

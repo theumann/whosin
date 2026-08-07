@@ -45,7 +45,7 @@ export function buildRosterBody(d: EventMessageData): string {
   const sections: Array<[EntryStatus, string]> = [
     ["IN", "✅ In"],
     ["WAITLIST", "⏳ Wait List"],
-    ["INJURY", "🩹 Injury Reserve"],
+    ["INJURY", "🤕 Injury Reserve"],
   ];
   const lines: string[] = [];
   for (const [status, label] of sections) {
@@ -87,8 +87,18 @@ export function buildCanceledMessage(d: EventMessageData): string {
   return `${header(d)}\n\n❌ This game is CANCELED. See you next time!`;
 }
 
-// wa.me deep link: opens WhatsApp with the message pre-filled; the coach picks
-// the group and sends. ToS-compliant, nothing to maintain.
+// Deep link: opens WhatsApp with the message pre-filled; the coach picks the
+// group and sends. ToS-compliant, nothing to maintain.
+//
+// Uses api.whatsapp.com/send rather than the shorter wa.me — as of Aug 2026
+// wa.me mangles multi-byte UTF-8 in the text param, so every emoji arrives as
+// U+FFFD (the black-diamond question mark) in WhatsApp's compose box. Both
+// endpoints are official; api.whatsapp.com round-trips emoji correctly.
+// Verified by hand on both the phone app and WhatsApp Desktop. Don't
+// "simplify" this back to wa.me without re-testing that emoji survive the
+// handoff. Note api.whatsapp.com's own "Open WhatsApp" interstitial still
+// shows U+FFFD in its message preview — that is Meta's page, cosmetic only,
+// and the text handed to WhatsApp itself is correct.
 export function whatsappShareUrl(text: string): string {
-  return `https://wa.me/?text=${encodeURIComponent(text)}`;
+  return `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
 }
