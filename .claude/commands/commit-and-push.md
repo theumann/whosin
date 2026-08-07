@@ -50,13 +50,15 @@ If the changes touch app flows (events, roster, auth, the WhatsApp composer, pag
 
 Run `git diff HEAD` once more to confirm the full set of changes (including any formatting/doc updates from earlier steps).
 
-Draft a concise commit message following the style of recent commits (`git log --oneline -10`): a short summary line, optionally a brief body. End the message with the required trailer:
+Draft a concise commit message following the style of recent commits (`git log --oneline -10`): a short summary line, optionally a brief body. End the message with the required trailer, naming **whichever model is actually writing the commit** — do not copy a version from this file or from an earlier commit, as that would misattribute the work:
 
 ```
-Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+Co-Authored-By: Claude <current model name> <noreply@anthropic.com>
 ```
 
-PowerShell note: when passing the message via a single-quoted here-string (`@' ... '@`), avoid double quotes and `/` in the text — they can break argument parsing. Prefer plain wording.
+Include the `Claude-Session:` trailer too when the harness provides a session URL.
+
+PowerShell note: when passing the message via a single-quoted here-string (`@' ... '@`), avoid double quotes and `/` in the text — they can break argument parsing. Prefer plain wording. Simpler still for any message containing slashes, quotes, or URLs: write it to a file in the scratchpad directory and run `git commit -F <path>`, which sidesteps shell quoting entirely.
 
 Show the message to the user and ask for confirmation before committing. Once confirmed, stage all modified tracked files and create the commit.
 
