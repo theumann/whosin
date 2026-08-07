@@ -213,6 +213,36 @@ push` directly against the prod DB for the first deploy. **Now resolved:**
       phone: page loads, magic-link login works. Local Postgres remains fine
       for everyday schema iteration; this environment covers the cases local
       can't (phone testing, rehearsing against a deployed build).
+- [x] **Staging and production deploy from different branches.** Both
+      environments originally watched `main` (an artifact of Duplicate
+      Environment), so a single push deployed straight to production with no
+      rehearsal step. Now: **staging watches `main`**, **production watches a
+      dedicated `production` branch**, with **Wait for CI** enabled on the
+      production service so a red build can't ship. The environments already
+      had separate `DATABASE_URL`, `AUTH_SECRET`, and `AUTH_URL` values from
+      the duplication, so only the deploy trigger changed.
+
+      Shipping is therefore a git operation, which keeps the release history
+      in the repo rather than in Railway's dashboard:
+
+      ```bash
+      # what is on main but not yet in production?
+      git log --oneline production..main
+
+      # ship main to production (fast-forward)
+      git push origin main:production
+
+      # roll production back to a known-good commit
+      git push -f origin <sha>:production
+      ```
+
+      ⚠️ **Rolling back reverts code, not data.** `npm start` runs
+      `prisma migrate deploy`, and Prisma has no automatic down-migration. If
+      a bad deploy applied a *destructive* migration (dropped a column,
+      narrowed a type), force-pushing the old commit leaves production
+      running old code against the new schema — frequently worse than the bug
+      you're backing out. Rollback is only safe while migrations are additive.
+      See the open item below.
 
 ### 3. Auth + real email 🔴 ✅ Done
 
@@ -322,6 +352,22 @@ laptop:
       the Railway staging + production app services to activate; both unset
       locally is fine (errors just won't report and the build skips source
       map upload in dev).
+- [ ] **Migration safety / rollback guardrails** 🔴 — **do this next, or very
+      soon.** Now that production deploys deliberately from the `production`
+      branch, a bad release can be rolled back with
+      `git push -f origin <sha>:production` — but that reverts _code only_.
+      `npm start` runs `prisma migrate deploy` and Prisma has no automatic
+      down-migration, so a destructive migration (dropped column, narrowed
+      type, renamed field) survives the rollback and leaves old code running
+      against a new schema. The deploy split we just made is what raises the
+      stakes here: production can now lag staging by several commits, so a
+      single promote may apply several migrations at once. Worth deciding:
+      (a) an expand/contract convention so migrations are always additive and
+      reversible within a release, (b) a review step that flags destructive
+      SQL in `prisma/migrations` before promoting, and (c) whether the Hobby
+      plan's lack of point-in-time restore is acceptable once real coaches
+      have data in there — WAL archiving is on, but restore needs Pro. Get to
+      this before the first column drop or rename, not after.
 - [ ] **Uptime check** ⚪ — still open: a simple external ping (e.g.
       UptimeRobot's free tier) against `https://whosin.team` so you hear about
       an outage instead of a coach telling you.
