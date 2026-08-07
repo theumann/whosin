@@ -276,8 +276,9 @@ The primary user is a phone-first coach — test on a **real phone**, not just t
 laptop:
 
 - [ ] Layout/responsiveness on a small screen (the new Tailwind UI).
-- [ ] **The wa.me "Share to WhatsApp"** flow actually opens WhatsApp and
-      pre-fills the message on a phone (the key feature).
+- [ ] **The "Share to WhatsApp"** flow actually opens WhatsApp and pre-fills the
+      message on a phone (the key feature) — check the emoji survive the handoff,
+      not just the text. See the endpoint note in `src/lib/messages.ts`.
 - [ ] The native **date/time picker** behaves on mobile.
 - [ ] Magic-link login on the phone (tap link in email → lands authenticated).
 - [ ] Tip: test against the deployed URL, or expose local over your network with

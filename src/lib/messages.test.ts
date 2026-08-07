@@ -50,7 +50,7 @@ describe("buildRosterBody", () => {
     expect(body).toContain("✅ In (2/16):");
     expect(body).toContain("• Marco");
     expect(body).toContain("⏳ Wait List (1):");
-    expect(body).toContain("🩹 Injury Reserve (1):");
+    expect(body).toContain("🤕 Injury Reserve (1):");
     expect(body).not.toContain("Ghost");
     expect(body).not.toContain("Pending");
   });
@@ -97,7 +97,7 @@ describe("buildSquadBody", () => {
     });
     expect(body).toContain("🔵 Team A (2):");
     expect(body).toContain("• Marco");
-    expect(body).toContain("🟣 Team B (1):");
+    expect(body).toContain("🔴 Team B (1):");
     expect(body).toContain("• Tom");
   });
 
@@ -124,9 +124,17 @@ describe("buildCanceledMessage", () => {
 });
 
 describe("whatsappShareUrl", () => {
-  it("URL-encodes the message into a wa.me link", () => {
+  it("URL-encodes the message into a WhatsApp link", () => {
     expect(whatsappShareUrl("Hi there & welcome")).toBe(
-      "https://wa.me/?text=Hi%20there%20%26%20welcome",
+      "https://api.whatsapp.com/send?text=Hi%20there%20%26%20welcome",
     );
+  });
+
+  // Regression: wa.me mangled multi-byte UTF-8, turning every emoji into U+FFFD
+  // in WhatsApp. Pin the endpoint and the UTF-8 percent-encoding together.
+  it("percent-encodes emoji as UTF-8 and does not use wa.me", () => {
+    const url = whatsappShareUrl("✅ In");
+    expect(url).toBe("https://api.whatsapp.com/send?text=%E2%9C%85%20In");
+    expect(url).not.toContain("wa.me");
   });
 });

@@ -45,7 +45,7 @@ Instead, the model is **coexistence**:
 
 - **The app owns structured state** WhatsApp is bad at: rosters, RSVPs, payment tracking, event capacity/waitlists, schedules.
 - **WhatsApp stays the comms layer**: chat, banter, photos, casual updates. We do not try to replace it.
-- **Crossing the gap is one tap.** Coach broadcasts from the app via a "Share to WhatsApp" button that uses `https://wa.me/?text=...` deep links — the app composes the message, WhatsApp handles the actual send. ToS-compliant, free, nothing to maintain.
+- **Crossing the gap is one tap.** Coach broadcasts from the app via a "Share to WhatsApp" button that uses `https://api.whatsapp.com/send?text=...` deep links — the app composes the message, WhatsApp handles the actual send. ToS-compliant, free, nothing to maintain. Use this endpoint, not the shorter `wa.me` — as of Aug 2026 `wa.me` mangles multi-byte UTF-8 and turns every emoji into U+FFFD. See `src/lib/messages.ts`.
 - **A public game-status URL** is the canonical source of truth players see. Coach drops it once in the WhatsApp group; players tap to view the live roster without needing an account.
 
 The mental model: the app is what WhatsApp would be if WhatsApp could do rosters and payments. Do the 5% WhatsApp handles poorly; leave the 95% where it already works.
