@@ -226,8 +226,12 @@ push` directly against the prod DB for the first deploy. **Now resolved:**
       in the repo rather than in Railway's dashboard:
 
       ```bash
+      # always start here: local refs go stale fast, and a stale main is
+      # why a promote silently reports "Everything up-to-date"
+      git checkout main && git pull
+
       # what is on main but not yet in production?
-      git log --oneline production..main
+      git log --oneline origin/production..main
 
       # ship main to production (fast-forward)
       git push origin main:production
@@ -235,6 +239,11 @@ push` directly against the prod DB for the first deploy. **Now resolved:**
       # roll production back to a known-good commit
       git push -f origin <sha>:production
       ```
+
+      There is deliberately **no local `production` branch** — it only exists
+      on the remote, so it can't drift or be committed to by accident. Always
+      refer to it as `origin/production`; plain `production` will fail with
+      "unknown revision".
 
       ⚠️ **Rolling back reverts code, not data.** `npm start` runs
       `prisma migrate deploy`, and Prisma has no automatic down-migration. If
