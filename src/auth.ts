@@ -3,11 +3,17 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import Nodemailer from "next-auth/providers/nodemailer";
 import { db } from "@/lib/db";
 import { isRateLimited } from "@/lib/rateLimit";
+import { isEmailAllowed, parseAllowlist } from "@/lib/allowlist";
 
 // Magic-link auth for the coach. Real email goes through Resend's HTTP API
 // (plain HTTPS — Railway blocks outbound SMTP ports) when RESEND_API_KEY is
 // set. Without it (local dev), the login link is just logged to the server
 // console instead of actually being sent.
+
+// Invite-only in v1 — see src/lib/allowlist.ts for why this gate exists.
+const allowlist = parseAllowlist(process.env.ALLOWED_EMAILS);
+const isProduction = process.env.NODE_ENV === "production";
+
 const resendApiKey = process.env.RESEND_API_KEY;
 const from = process.env.EMAIL_FROM ?? "whosin <login@whosin.local>";
 
@@ -51,6 +57,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   pages: {
     signIn: "/login",
     verifyRequest: "/check-email",
+  },
+  callbacks: {
+    // Runs before the magic link is sent, so a non-allowlisted address never
+    // triggers an email and never gets a User row created for it.
+    signIn({ user }) {
+      if (isEmailAllowed(user?.email, allowlist, isProduction)) return true;
+      console.log("Blocked sign-in attempt for a non-allowlisted address.");
+      return false;
+    },
   },
   providers: [
     Nodemailer({

@@ -292,6 +292,11 @@ Set on the Railway app service:
 - [x] `AUTH_URL=https://whosin.team`
 - [x] `EMAIL_FROM` + `RESEND_API_KEY` (HTTP API key, not SMTP creds —
       `.env.example` reflects this)
+- [ ] `ALLOWED_EMAILS` — comma-separated sign-in allowlist. **Required**: with
+      it unset in production every sign-in is refused, by design. Sign-up is
+      invite-only in v1, which also keeps `/login` from being an open email
+      relay that strangers can use to burn the Resend quota and the sending
+      domain's reputation.
 
 ### 6. Branding + PWA assets 🟡
 

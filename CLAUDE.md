@@ -62,6 +62,7 @@ We're starting as a web-first PWA (Next.js). A PWA can later be wrapped in a nat
 - **Styling:** Tailwind CSS v4. Light theme (mobile-first usage), Inter font, `lucide-react` for icons. Shared button/field class strings live in `src/lib/ui.ts` rather than a component library.
 - **Database:** Postgres via Prisma.
 - **Auth:** magic-link email; coach-only in v1. Player opt-in (phase 2) is a public tokenized URL, not auth.
+- **Sign-up is invite-only:** `ALLOWED_EMAILS` gates who may request a magic link (`src/lib/allowlist.ts`). Without it `/login` is an open email relay — anyone could make the app send mail to any address. Unset in production blocks every sign-in, deliberately.
 - **Hosting:** Railway (app + Postgres in one project).
 - **Roles:** model `User` ⟷ `Group` via a `Membership` carrying a `role` from day one. v1 creates one owner membership; second/third coach is additive later — no migration.
 
