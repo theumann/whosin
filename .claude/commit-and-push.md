@@ -14,6 +14,7 @@ Check these when the diff touches the relevant area:
 - **Neutral domain naming** — the app generalises from sports teams to any activity group. Sports-specific concepts hard-coded where they would block that reuse are a defect, not a shortcut.
 - **The WhatsApp-coexistence model** — the app owns structured state, WhatsApp stays the comms layer. Nothing tries to bridge or replace it.
 - **WhatsApp links use `https://api.whatsapp.com/send?text=`**, never the shorter `wa.me` — as of Aug 2026 `wa.me` mangles multi-byte UTF-8 and turns every emoji into U+FFFD. See `src/lib/messages.ts`.
+- **No hard-coded dates in E2E specs** — use the helpers in `e2e/dates.ts` so dates are relative to the run. A pinned date passes until the calendar catches up, then fails permanently and looks like a broken feature. Also remember specs share one DB within a run (single worker, serial), so events one spec creates are visible to later ones.
 
 ## Test coverage
 

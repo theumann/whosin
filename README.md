@@ -119,6 +119,17 @@ against it, so a local Postgres with a synced schema is required. A global setup
 (that flow is better tested in its own targeted spec later). Reports land in
 `playwright-report/` (gitignored).
 
+**Never hard-code dates in an E2E spec.** Use the helpers in `e2e/dates.ts`
+(`daysFromNow`, `dateValue`, `dateTimeValue`, `nextYear`) so every date is
+relative to the run. A hard-coded date is a time bomb: it passes until the
+calendar catches up, then fails permanently, and the failure looks like a
+broken feature rather than a stale fixture. This already happened once —
+`recurring-events.spec.ts` pinned Sep 2026 and started reporting "expected 4,
+received 2" once two of its occurrences aged onto the Past tab. Note also that
+specs share one database within a run (one worker, serial), so an event a
+spec creates is visible to later specs — which is why the created event must
+stay in the future, or `events-page.spec.ts`'s empty-Past-tab assertion fails.
+
 ### Writing tests
 
 Co-locate unit tests as `*.test.ts` next to the code (`src/lib/messages.test.ts`);
