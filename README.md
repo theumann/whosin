@@ -437,6 +437,28 @@ laptop:
       a long TXT string and one typo silently breaks sending for _both_ apps
       — so inventory every record first and diff the zone (`dig` /
       `Resolve-DnsName` against both nameserver sets) before and after.
+- [x] **Security headers** 🟡 — `next.config.ts` now sets them on every route:
+      `Strict-Transport-Security` (1 year, subdomains, deliberately **no**
+      `preload` — that submits the domain to a browser-baked list that is slow
+      to reverse), `X-Frame-Options: DENY` (the delete-player and
+      cancel-event actions are one-click form posts, so clickjacking was the
+      one plausible attack), `X-Content-Type-Options`, `Referrer-Policy`, and
+      `Permissions-Policy`. CSP ships as **`Content-Security-Policy-Report-Only`**
+      on purpose: a CSP mistake breaks the app silently for real users, and
+      report-only surfaces violations without blocking. Verified against a
+      production build (`next build` + `next start`) driving `/login`, `/`,
+      `/events`, `/roster`, `/privacy`, `/terms`, the create-event modal and
+      an event detail page: **zero violations**. Two notes before promoting it
+      to the enforcing header: (a) `'unsafe-inline'` in `script-src` is
+      required, since Next injects inline bootstrap/hydration scripts and the
+      nonce alternative needs middleware this app deliberately doesn't have;
+      (b) `connect-src` wildcards `*.sentry.io` because the DSN host is org-
+      and region-specific and `NEXT_PUBLIC_SENTRY_DSN` is unset locally, so
+      Sentry's real egress was never exercised in testing — **check staging's
+      console for a report-only violation on the ingest host before
+      enforcing**, or error reporting dies quietly. When promoting, rename the
+      header key and add back `upgrade-insecure-requests` (browsers ignore it
+      in report-only and warn on every page load, so it was removed).
 - [ ] **Uptime check** ⚪ — still open: a simple external ping (e.g.
       UptimeRobot's free tier) against `https://whosin.team` so you hear about
       an outage instead of a coach telling you.
