@@ -282,6 +282,31 @@ working end-to-end (email arrives, link signs in).
       custom domain — verified active (`whosin.team` loads over HTTPS).
 - [x] Add the **email DNS records** from step 3 (SPF/DKIM/DMARC) at the same
       registrar (under the `contact.` subdomain).
+- [x] **Apex ALIAS + `access@whosin.team` forwarding** — the apex was a CNAME
+      to Railway (`ak04l2iq.up.railway.app`), and a CNAME must be the only
+      record at its hostname (RFC 1034), so **no MX could exist at
+      `whosin.team`** and Namecheap's email forwarding was unavailable (its
+      UI reports this as the misleading "Your domain is using other email
+      service"). Asking the zone for MX literally returned the CNAME. Fixed
+      by switching the `@` record from **CNAME to ALIAS**, same target —
+      ALIAS answers as an A record while still tracking Railway's hostname,
+      which frees the apex to hold MX. Then Mail Settings → Email
+      Forwarding, with `access@whosin.team` → personal Gmail, to back the
+      invite-request link on `/login` (`src/lib/access.ts`). Verified end to
+      end: apex answers A, `eforward1-5` MX live, SPF added, site still
+      loads, Railway domain still validated, test email delivered. Note
+      `fphelp.app` solves the same problem with a hardcoded A record to a
+      Railway IP — it works, but pins infrastructure we don't control; ALIAS
+      is the safer form of the same trick.
+- [x] **Side effect — Namecheap allows one mail mode per zone.** Switching
+      Mail Settings to Email Forwarding deleted _every_ custom MX row,
+      including the two on subdomains that Resend asked for
+      (`contact.whosin.team` inbound, `send.contact.whosin.team` bounce
+      feedback). SPF and DKIM survived, so **sending is unaffected** for both
+      apps and Resend still reports the domain verified. Nothing receives on
+      `contact.whosin.team`, so this was accepted rather than reverted:
+      switching back to Custom MX would drop `eforward1-5` and kill the new
+      alias. See the Cloudflare item in step 8 for the way out.
 
 ### 5. Production env vars 🔴 ✅ Done
 
@@ -382,6 +407,25 @@ laptop:
       plan's lack of point-in-time restore is acceptable once real coaches
       have data in there — WAL archiving is on, but restore needs Pro. Get to
       this before the first column drop or rename, not after.
+- [ ] **Move DNS to Cloudflare** 🟡 — Namecheap allows exactly one mail mode
+      per zone (Email Forwarding _or_ Custom MX), which is why Resend's MX
+      records had to be sacrificed to get `access@whosin.team` working (see
+      step 4). Cloudflare has no zone-wide mail mode — MX are ordinary
+      per-hostname records — and its CNAME flattening keeps the apex pointing
+      at Railway, so the alias and Resend's records can coexist. The
+      registrar stays Namecheap; only the nameservers change, and Resend
+      needs no reconfiguration (recreate the same subdomain records and it
+      keeps verifying). Two risks this retires: **(a)** Resend still lists MX
+      records that DNS no longer has, so a stricter re-verification could
+      flip the domain to unverified — and **both apps send from
+      `contact.whosin.team`**, so that would break magic links for both at
+      once; **(b)** bounce/complaint feedback is degraded without the
+      `send.contact` MX, so "no bounce shown in Resend" is no longer proof a
+      magic link was delivered. Neither is urgent, so do this on a calm week,
+      not a launch week. The migration's real risk is the copy step — DKIM is
+      a long TXT string and one typo silently breaks sending for _both_ apps
+      — so inventory every record first and diff the zone (`dig` /
+      `Resolve-DnsName` against both nameserver sets) before and after.
 - [ ] **Uptime check** ⚪ — still open: a simple external ping (e.g.
       UptimeRobot's free tier) against `https://whosin.team` so you hear about
       an outage instead of a coach telling you.
