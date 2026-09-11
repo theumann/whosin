@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { dateTimeValue, daysFromNow } from "./dates";
 
 // The product's spine: create an event, mark a player In, confirm the capacity
 // indicator and the WhatsApp message both reflect it.
@@ -13,7 +14,9 @@ test("create event, mark a player In, see it reflected in the WhatsApp message",
   await expect(page.getByRole("heading", { name: "Create an event" })).toBeVisible();
 
   // Create an event (capacity 10).
-  await page.locator('input[name="startsAt"]').fill("2027-08-15T19:00");
+  // Must stay in the future: specs share one DB within a run, and
+  // events-page.spec asserts the Past tab is empty.
+  await page.locator('input[name="startsAt"]').fill(dateTimeValue(daysFromNow(30)));
   await page.locator('input[name="capacity"]').fill("10");
   await page.getByRole("dialog").getByRole("button", { name: "Create event" }).click();
 

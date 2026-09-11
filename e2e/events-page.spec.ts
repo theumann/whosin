@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { nextYear } from "./dates";
 
 test("events page shows Upcoming tab active by default", async ({ page }) => {
   await page.goto("/events");
@@ -21,8 +22,9 @@ test("Past tab shows empty state when there are no past events", async ({ page }
 
 test("Upcoming tab shows seeded future event", async ({ page }) => {
   await page.goto("/events");
-  // Global setup seeds a Jun 1 2027 event — year should appear since it's not current year.
-  await expect(page.getByText(/2027/).first()).toBeVisible();
+  // Global setup seeds a Jun 1 event in next year — the year should appear,
+  // since formatEventDate only prints it when it isn't the current year.
+  await expect(page.getByText(new RegExp(String(nextYear()))).first()).toBeVisible();
 });
 
 test("Create Event button opens the modal", async ({ page }) => {

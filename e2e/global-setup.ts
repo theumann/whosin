@@ -45,9 +45,16 @@ export default async function globalSetup() {
     await db.player.deleteMany({ where: { groupId } });
     await db.player.createMany({ data: PLAYERS.map((p) => ({ ...p, groupId })) });
 
-    // Seed one future event so pages that list upcoming events have something to show.
+    // Seed one future event so pages that list upcoming events have something
+    // to show. June 1 of NEXT year: always in the future, and always a
+    // different year from today, which events-page.spec relies on to check
+    // that formatEventDate prints the year.
     const futureEvent = await db.event.create({
-      data: { groupId, startsAt: new Date("2027-06-01T19:00:00Z"), capacity: 10 },
+      data: {
+        groupId,
+        startsAt: new Date(Date.UTC(new Date().getFullYear() + 1, 5, 1, 19, 0, 0)),
+        capacity: 10,
+      },
     });
     const players = await db.player.findMany({ where: { groupId }, select: { id: true } });
     await db.eventEntry.createMany({
