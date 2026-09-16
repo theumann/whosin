@@ -1,4 +1,4 @@
-# my-team
+# whosIn
 
 An app for managing sports teams and groups. The coach owns structured state
 WhatsApp is bad at — rosters, RSVPs, event capacity/waitlists, payment tracking —
@@ -13,7 +13,8 @@ and broadcasts to the group's existing WhatsApp chat with one tap. See
 - **Auth.js (NextAuth v5)** — magic-link email (logged to console in dev)
 - **Tailwind CSS v4** for styling, **lucide-react** for icons
 - **Vitest** for unit tests
-- Hosting: Railway (planned)
+- Hosting: **Railway** (app + Postgres) — live at
+  [whosin.team](https://whosin.team)
 
 ## Architecture
 
@@ -209,6 +210,25 @@ push` directly against the prod DB for the first deploy. **Now resolved:**
       backups and point-in-time **restore** require the Pro plan (not
       available on Hobby), but archiving itself is free and runs regardless —
       enabled now so a restore is possible later if you ever upgrade.
+- [x] **Rotating the Postgres password** (done 2026-09-16, after the live
+      credential leaked into a chat transcript). Railway has no "change
+      password" control — the Postgres service's Danger zone only offers
+      deleting the whole service — and the rotation is **two halves, both
+      required**: run `ALTER USER postgres WITH PASSWORD '…';` over
+      `railway connect Postgres` (or `psql` via `DATABASE_PUBLIC_URL`), then
+      update `POSTGRES_PASSWORD` on the Postgres service, because Railway
+      composes `DATABASE_URL` / `DATABASE_PUBLIC_URL` from it and changing the
+      database alone leaves both stale. Keep those two as
+      `${{POSTGRES_PASSWORD}}` templates rather than literals so one edit
+      propagates; the app's `DATABASE_URL` stays `${{Postgres.DATABASE_URL}}`
+      and needs only a redeploy. Generate the password **alphanumeric only** —
+      it is embedded in a URL, and `@ : / # %` break parsing in a way Prisma
+      reports as `P1000: Authentication failed`, indistinguishable from a
+      wrong password. Two traps that each cost time here: `psql` prints
+      `ALTER ROLE` on success, and a **missing semicolon** leaves it on a
+      `railway-#` continuation prompt where the statement silently never runs;
+      and `\password postgres` is the better command anyway, since it prompts
+      instead of leaving the new secret in shell history.
 - [x] **Staging environment, reachable from a phone.** Set up via Railway's
       **Duplicate Environment** on the `production` environment, which cloned
       the app + Postgres services into a new `staging` environment with the
@@ -317,7 +337,11 @@ working end-to-end (email arrives, link signs in).
       apps and Resend still reports the domain verified. Nothing receives on
       `contact.whosin.team`, so this was accepted rather than reverted:
       switching back to Custom MX would drop `eforward1-5` and kill the new
-      alias. See the Cloudflare item in step 8 for the way out.
+      alias. See the Cloudflare item in step 8 for the way out. **This fired
+      on 2026-09-15:** Resend re-checked, found no `send.contact` MX, flipped
+      `contact.whosin.team` to unverified, and magic-link sign-in started
+      failing in production with a 403 — weeks after the DNS change that
+      caused it.
 
 ### 5. Production env vars 🔴 ✅ Done
 
@@ -328,11 +352,14 @@ Set on the Railway app service:
 - [x] `AUTH_URL=https://whosin.team`
 - [x] `EMAIL_FROM` + `RESEND_API_KEY` (HTTP API key, not SMTP creds —
       `.env.example` reflects this)
-- [ ] `ALLOWED_EMAILS` — comma-separated sign-in allowlist. **Required**: with
+- [x] `ALLOWED_EMAILS` — comma-separated sign-in allowlist. **Required**: with
       it unset in production every sign-in is refused, by design. Sign-up is
       invite-only in v1, which also keeps `/login` from being an open email
       relay that strangers can use to burn the Resend quota and the sending
-      domain's reputation.
+      domain's reputation. Set on production (3 addresses), confirmed
+      2026-09-16. If it ever looks missing, check the service before assuming
+      it was lost: Railway variables are scoped **per service, per
+      environment**, so it lives on the `whosin` app service, not on Postgres.
 
 ### 6. Branding + PWA assets 🟡
 
@@ -418,25 +445,44 @@ laptop:
       plan's lack of point-in-time restore is acceptable once real coaches
       have data in there — WAL archiving is on, but restore needs Pro. Get to
       this before the first column drop or rename, not after.
-- [ ] **Move DNS to Cloudflare** 🟡 — Namecheap allows exactly one mail mode
-      per zone (Email Forwarding _or_ Custom MX), which is why Resend's MX
-      records had to be sacrificed to get `access@whosin.team` working (see
-      step 4). Cloudflare has no zone-wide mail mode — MX are ordinary
-      per-hostname records — and its CNAME flattening keeps the apex pointing
-      at Railway, so the alias and Resend's records can coexist. The
-      registrar stays Namecheap; only the nameservers change, and Resend
-      needs no reconfiguration (recreate the same subdomain records and it
-      keeps verifying). Two risks this retires: **(a)** Resend still lists MX
-      records that DNS no longer has, so a stricter re-verification could
-      flip the domain to unverified — and **both apps send from
-      `contact.whosin.team`**, so that would break magic links for both at
-      once; **(b)** bounce/complaint feedback is degraded without the
-      `send.contact` MX, so "no bounce shown in Resend" is no longer proof a
-      magic link was delivered. Neither is urgent, so do this on a calm week,
-      not a launch week. The migration's real risk is the copy step — DKIM is
-      a long TXT string and one typo silently breaks sending for _both_ apps
-      — so inventory every record first and diff the zone (`dig` /
-      `Resolve-DnsName` against both nameserver sets) before and after.
+- [ ] **Move DNS to Cloudflare** 🟡 — **in progress, 2026-09-16.** Not the
+      calm-week migration this item originally planned for: risk (a) fired
+      first (see step 4), Resend flipped `contact.whosin.team` to unverified,
+      and `/login` started returning 500 with
+      `Resend API error 403: domain is not verified`. Sending had run on
+      SPF+DKIM alone for weeks after the MX rows were deleted, which is why
+      nothing looked wrong until it broke. Namecheap allows exactly one mail
+      mode per zone (Email Forwarding _or_ Custom MX), so restoring Resend's
+      MX there would have killed `access@whosin.team` — Cloudflare has no
+      zone-wide mail mode, MX are ordinary per-hostname records, and CNAME
+      flattening keeps the apex on Railway, so forwarding and Resend coexist.
+      Registrar stays Namecheap; only the nameservers change. `theapps.app` is
+      a separate zone and was unaffected. The zone, recreated in Cloudflare:
+      apex `whosin.team` CNAME → `<id>.up.railway.app` (**DNS only**);
+      `_dmarc` TXT `v=DMARC1; p=none;`; `send.contact` MX
+      `10 feedback-smtp.us-east-1.amazonses.com`; `send.contact` TXT
+      `v=spf1 include:amazonses.com ~all`; and `resend._domainkey.contact` TXT
+      holding the `p=MIGf…` key. Four traps, all avoidable next time:
+      Cloudflare's importer **cannot enumerate a zone** — it guesses common
+      hostnames, so it found only the apex CNAME and `_dmarc` and silently
+      missed all three Resend records, which must be added by hand _before_
+      activation; the apex must stay **grey-cloud / DNS only**, because
+      Railway issues its own certificate and a proxied origin breaks renewal
+      (Cloudflare's "not fully protected" warning is an upsell, ignore it);
+      Resend's **"Enable Receiving" MX is not needed** — nothing receives on
+      `contact.whosin.team`, and its record belongs on that subdomain, never
+      the apex, where it would collide with Email Routing; and switching
+      Namecheap to Custom DNS **wipes every record in the Advanced DNS tab**,
+      so inventory the zone first
+      (`Resolve-DnsName -Server dns1.registrar-servers.com`) — there is no
+      rollback afterwards. Copy DKIM from Resend's dashboard, never retype it.
+      **Remaining:** Cloudflare Email Routing for `access@` **and**
+      `contact@whosin.team` (both apex addresses — `contact@` is the
+      deletion-request address promised in `/privacy` and `/terms`, so it
+      bouncing is a real problem, and Email Routing can only be set up once
+      the zone is active), then re-verify `contact.whosin.team` in Resend,
+      then a real magic-link sign-in on production. Mail to both addresses
+      bounces from the nameserver switch until routing is live.
 - [x] **Security headers** 🟡 — `next.config.ts` now sets them on every route:
       `Strict-Transport-Security` (1 year, subdomains, deliberately **no**
       `preload` — that submits the domain to a browser-baked list that is slow
