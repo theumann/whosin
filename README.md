@@ -445,7 +445,7 @@ laptop:
       plan's lack of point-in-time restore is acceptable once real coaches
       have data in there — WAL archiving is on, but restore needs Pro. Get to
       this before the first column drop or rename, not after.
-- [ ] **Move DNS to Cloudflare** 🟡 — **in progress, 2026-09-16.** Not the
+- [x] **Move DNS to Cloudflare** 🟡 — **done 2026-09-16.** Not the
       calm-week migration this item originally planned for: risk (a) fired
       first (see step 4), Resend flipped `contact.whosin.team` to unverified,
       and `/login` started returning 500 with
@@ -476,13 +476,19 @@ laptop:
       so inventory the zone first
       (`Resolve-DnsName -Server dns1.registrar-servers.com`) — there is no
       rollback afterwards. Copy DKIM from Resend's dashboard, never retype it.
-      **Remaining:** Cloudflare Email Routing for `access@` **and**
-      `contact@whosin.team` (both apex addresses — `contact@` is the
-      deletion-request address promised in `/privacy` and `/terms`, so it
-      bouncing is a real problem, and Email Routing can only be set up once
-      the zone is active), then re-verify `contact.whosin.team` in Resend,
-      then a real magic-link sign-in on production. Mail to both addresses
-      bounces from the nameserver switch until routing is live.
+      **Outcome:** the zone now does what Namecheap structurally could not —
+      apex forwarding and Resend's subdomain records coexisting. Cloudflare
+      Email Routing serves `access@` and `contact@whosin.team` (apex MX
+      `route1/2/3.mx.cloudflare.net` plus `v=spf1
+    include:_spf.mx.cloudflare.net ~all`), both delivering; Resend reports
+      Sending verified and magic-link sign-in works on production. Note
+      Email Routing can only be configured **after** the zone goes active, so
+      mail to both addresses bounces from the nameserver switch until it is —
+      keep that window short. Resend's inbound half showed as pending and was
+      **disabled**: nothing receives on `contact.whosin.team`, and sending
+      never depended on it. Verified from outside afterwards: apex answers
+      Railway with no `cf-ray` header (confirming grey-cloud), and the DKIM
+      key is byte-identical to the Namecheap original.
 - [x] **Security headers** 🟡 — `next.config.ts` now sets them on every route:
       `Strict-Transport-Security` (1 year, subdomains, deliberately **no**
       `preload` — that submits the domain to a browser-baked list that is slow
