@@ -77,6 +77,15 @@ export default async function LoginPage({
         </button>
       </form>
 
+      {accessDenied ? null : (
+        <p className="mt-4 text-sm text-slate-500">
+          whosIn is invite-only right now.{" "}
+          <a className={linkAccent} href={accessRequestMailto()}>
+            Request access
+          </a>
+        </p>
+      )}
+
       <p className="mt-8 text-xs text-slate-400">
         By signing in, you agree to our{" "}
         <a className="underline" href="/terms">

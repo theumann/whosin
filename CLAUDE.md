@@ -64,6 +64,7 @@ We're starting as a web-first PWA (Next.js). A PWA can later be wrapped in a nat
 - **Auth:** magic-link email; coach-only in v1. Player opt-in (phase 2) is a public tokenized URL, not auth.
 - **Sign-up is invite-only:** `ALLOWED_EMAILS` gates who may request a magic link (`src/lib/allowlist.ts`). Without it `/login` is an open email relay — anyone could make the app send mail to any address. Unset in production blocks every sign-in, deliberately.
   A blocked address gets an invite-only notice on `/login` with a `mailto:` request link (`src/lib/access.ts`) — the request never touches our server, so there is still no endpoint that sends mail to an address someone else typed. Auth.js signals this by throwing `AccessDenied`; the sign-in action catches it and redirects to `?error=AccessDenied` rather than letting the error boundary render a crash page and file it with Sentry.
+  `/login` also carries a standing invite-only line under the submit button (not just after a rejection), because the sign-in page is the landing page for anyone following a public link — without it an uninvited visitor only discovers the gate by failing at it.
 - **Hosting:** Railway (app + Postgres in one project).
 - **Roles:** model `User` ⟷ `Group` via a `Membership` carrying a `role` from day one. v1 creates one owner membership; second/third coach is additive later — no migration.
 

@@ -60,6 +60,9 @@ const nextConfig: NextConfig = {
   outputFileTracingRoot: path.join(__dirname),
   turbopack: { root: path.join(__dirname) },
 
+  // Don't advertise the framework in an `x-powered-by` response header.
+  poweredByHeader: false,
+
   // Keep the data layer behind a clean API boundary (route handlers / server
   // actions) so the native-app door stays open — see CLAUDE.md.
 

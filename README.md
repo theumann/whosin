@@ -459,6 +459,19 @@ laptop:
       enforcing**, or error reporting dies quietly. When promoting, rename the
       header key and add back `upgrade-insecure-requests` (browsers ignore it
       in report-only and warn on every page load, so it was removed).
+      `poweredByHeader: false` also drops Next's `x-powered-by` response
+      header, which advertised the framework and version to anyone curious.
+- [x] **Public-link prep** 🟡 — done ahead of the THeApps showcase site linking
+      here. `src/app/opengraph-image.tsx` renders a 1200×630 preview card from
+      `public/logo.png` at build time, with `openGraph`/`twitter` metadata and a
+      `metadataBase` in `src/app/layout.tsx` so shared links resolve it
+      absolutely. `src/app/robots.ts` allows only the pages a signed-out visitor
+      can actually see (`/`, `/login`, `/privacy`, `/terms`) and disallows the
+      rest, which would only redirect a crawler to `/login`; `/check-email` is
+      additionally `noindex`. `/login` now carries a standing invite-only line
+      under the button, so a visitor arriving from the showcase site learns why
+      they can't sign up instead of hitting a dead end. Deleted the unused
+      2.1 MB `public/logo_original.png`, which was being served publicly.
 - [ ] **Uptime check** ⚪ — still open: a simple external ping (e.g.
       UptimeRobot's free tier) against `https://whosin.team` so you hear about
       an outage instead of a coach telling you.
