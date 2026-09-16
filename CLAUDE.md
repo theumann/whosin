@@ -1,4 +1,4 @@
-# my-team
+# whosIn
 
 An app for managing sports teams and sports groups, with the potential to expand to all kinds of activity groups in the future.
 

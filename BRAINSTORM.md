@@ -1,4 +1,4 @@
-# Brainstorm — my-team
+# Brainstorm — whosIn
 
 Unfiltered first-instinct thoughts before hearing the user's ideas. Opinionated on purpose.
 

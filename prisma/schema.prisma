@@ -1,4 +1,4 @@
-// my-team — phase 1 schema
+// whosIn — phase 1 schema
 // Neutral names (Group/Event) per the generalization constraint in CLAUDE.md.
 // Roles + Membership exist from day one so a 2nd/3rd coach is additive (phase 2),
 // with no migration. Player is NOT a User; players are data the coach manages.
