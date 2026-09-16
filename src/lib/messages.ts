@@ -99,6 +99,17 @@ export function buildCanceledMessage(d: EventMessageData): string {
 // handoff. Note api.whatsapp.com's own "Open WhatsApp" interstitial still
 // shows U+FFFD in its message preview — that is Meta's page, cosmetic only,
 // and the text handed to WhatsApp itself is correct.
+//
+// Callers must navigate in place — no window.open, no target="_blank". On
+// Android the handoff returns through the tab it was launched from and points
+// it at a content://com.whatsapp.provider.media URI, which is private to
+// WhatsApp, so Chrome strands the coach on "Your file couldn't be accessed".
+// With no extra tab there is nothing left to hijack; they come back via the
+// back button or the app switcher. This costs a nicer desktop behaviour (a new
+// tab let WhatsApp Desktop open while the page stayed put) and that trade is
+// deliberate — the phone is where this feature is used. Both call sites, the
+// composer's share button and the "Share cancellation" link, follow this;
+// reproduced and fixed on a real phone, Sep 2026.
 export function whatsappShareUrl(text: string): string {
   return `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
 }
