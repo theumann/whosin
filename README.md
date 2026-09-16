@@ -478,10 +478,10 @@ laptop:
       rollback afterwards. Copy DKIM from Resend's dashboard, never retype it.
       **Outcome:** the zone now does what Namecheap structurally could not —
       apex forwarding and Resend's subdomain records coexisting. Cloudflare
-      Email Routing serves `access@` and `contact@whosin.team` (apex MX
-      `route1/2/3.mx.cloudflare.net` plus `v=spf1
-    include:_spf.mx.cloudflare.net ~all`), both delivering; Resend reports
-      Sending verified and magic-link sign-in works on production. Note
+      Email Routing serves `access@` and `contact@whosin.team` — apex MX
+      `route1/2/3.mx.cloudflare.net`, plus Cloudflare's own SPF include at the
+      apex — both delivering; Resend reports Sending verified and magic-link
+      sign-in works on production. Note
       Email Routing can only be configured **after** the zone goes active, so
       mail to both addresses bounces from the nameserver switch until it is —
       keep that window short. Resend's inbound half showed as pending and was
