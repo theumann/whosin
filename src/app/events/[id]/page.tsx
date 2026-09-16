@@ -244,10 +244,11 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
         <h2 className="text-lg font-semibold">Send to WhatsApp</h2>
         {event.canceledAt ? (
           <p className="mb-4">
+            {/* No target="_blank": same reason as share() in WhatsAppComposer —
+                a tab opened for the handoff comes back pointed at a private
+                content:// URI and strands the coach on a Chrome error page. */}
             <a
               href={canceledShareUrl}
-              target="_blank"
-              rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 rounded-md bg-orange-500 px-4 py-2 text-sm font-bold text-white no-underline shadow-sm transition-colors hover:bg-orange-600"
             >
               <Megaphone size={16} /> Share cancellation

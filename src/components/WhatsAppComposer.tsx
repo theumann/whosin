@@ -44,8 +44,14 @@ export function WhatsAppComposer({
     setText(buildText(incRoster, incSquad));
   }
 
+  // Navigate in place rather than opening a tab. On Android the handoff comes
+  // back through the tab it was launched from and points it at a
+  // content://com.whatsapp.provider.media URI, which is private to WhatsApp —
+  // Chrome renders that as "Your file couldn't be accessed". With no extra
+  // tab there is nothing left behind to hijack; the coach returns via back or
+  // the app switcher. Don't "restore" _blank without re-testing on a phone.
   function share() {
-    window.open(whatsappShareUrl(text), "_blank", "noopener,noreferrer");
+    window.location.href = whatsappShareUrl(text);
   }
 
   async function copy() {
