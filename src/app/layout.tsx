@@ -5,10 +5,16 @@ import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
+const description = "Event Attendance Management and WhatsApp Group Notifications";
+
 export const metadata: Metadata = {
+  // Absolute base for the Open Graph image URL, so link previews resolve it.
+  metadataBase: new URL("https://whosin.team"),
   title: "whosIn",
-  description: "Event Attendance Management and WhatsApp Group Notifications",
+  description,
   manifest: "/manifest.webmanifest",
+  openGraph: { type: "website", siteName: "whosIn", title: "whosIn", description },
+  twitter: { card: "summary_large_image", title: "whosIn", description },
 };
 
 export const viewport: Viewport = {
