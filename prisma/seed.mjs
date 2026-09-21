@@ -16,9 +16,9 @@ if (!isLocal && process.env.ALLOW_REMOTE_SEED !== "true") {
 const db = new PrismaClient();
 
 // Re-runnable seed: resets the demo coach's roster to a known state.
-// Set SEED_COACH_EMAIL to log in as a different coach; defaults to the
-// project owner so you can sign in with your own email and see the data.
-const COACH_EMAIL = process.env.SEED_COACH_EMAIL ?? "thierry.heumann@gmail.com";
+// Set SEED_COACH_EMAIL to the address you sign in with locally — the default
+// is a placeholder, so seeding without it gives you data you can't log in as.
+const COACH_EMAIL = process.env.SEED_COACH_EMAIL ?? "coach@example.com";
 const COACH_NAME = "Thierry";
 const GROUP_NAME = "Thursday Night Soccer";
 

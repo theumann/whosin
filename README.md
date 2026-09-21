@@ -38,13 +38,14 @@ The rule: route handlers / server actions stay thin and delegate to
 
 ```bash
 npm install
-cp .env.example .env          # then fill in DATABASE_URL + AUTH_SECRET
+cp .env.example .env          # fill in DATABASE_URL, AUTH_SECRET, SEED_COACH_EMAIL
 npm run db:migrate            # apply migrations to your local Postgres
 npm run db:seed               # demo coach + 12-player roster
 npm run dev                   # http://localhost:3000
 ```
 
-Log in: enter your email, then copy the **magic link printed in the terminal**
+Log in: enter the address you set as `SEED_COACH_EMAIL` — the demo roster
+belongs to that coach — then copy the **magic link printed in the terminal**
 (dev doesn't send real email yet).
 
 ### Useful scripts
