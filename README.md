@@ -162,7 +162,16 @@ use it without this), 🟡 = needed for a credible launch, ⚪ = nice-to-have.
       experience; Vercel + a separate DB is the main alternative but adds moving
       parts.)
 - [x] **Connect the GitHub repo** to the app service so Railway builds on push
-      (`npm run build` → `npm start`). Set the start command if needed.
+      (`npm run build`).
+- [x] **Service settings (both environments):** _Start Command_
+      `node scripts/start.mjs` and _Pre-deploy Command_ `npm run db:deploy`.
+      The app builds with `output: "standalone"` and starts with plain `node`,
+      not `next start` behind `npm start`: Railway bills for memory held, and
+      that cut idle memory from ~166 MB to ~94 MB (measured 2026-11-10).
+      Starting via `npm start` works but keeps an idle npm process (~20–30 MB)
+      alive next to Node. Migrations run once per deploy in the pre-deploy
+      step, which blocks the deploy if they fail. These settings live in the
+      dashboard, not in the repo — Railway's config-as-code is deprecated.
 - [x] Confirm the app runs as a long-lived Node server (it does) — Prisma
       connection pooling is fine, no serverless adapter needed.
 
@@ -195,9 +204,10 @@ push` directly against the prod DB for the first deploy. **Now resolved:**
       (`prisma/migrations/20260619214557_baseline`) from a diff against an
       empty schema, then marked it **applied** (not re-run, since the schema
       already matched) on local, staging, and production via
-      `prisma migrate resolve --applied 20260619214557_baseline`. `npm start`
-      now runs `prisma migrate deploy` before `next start`, so future schema
-      changes ship as committed migrations applied automatically on deploy.
+      `prisma migrate resolve --applied 20260619214557_baseline`. Every deploy
+      now runs `prisma migrate deploy` (Railway's pre-deploy command,
+      `npm run db:deploy`), so future schema changes ship as committed
+      migrations applied automatically on deploy.
       Local dev now uses `npm run db:migrate` (`prisma migrate dev`) instead
       of `db:push`.
 - [x] **Do NOT run the demo seed against production.** It's destructive and
@@ -277,7 +287,7 @@ push` directly against the prod DB for the first deploy. **Now resolved:**
       refer to it as `origin/production`; plain `production` will fail with
       "unknown revision".
 
-      ⚠️ **Rolling back reverts code, not data.** `npm start` runs
+      ⚠️ **Rolling back reverts code, not data.** Every deploy runs
       `prisma migrate deploy`, and Prisma has no automatic down-migration. If
       a bad deploy applied a *destructive* migration (dropped a column,
       narrowed a type), force-pushing the old commit leaves production
@@ -434,7 +444,7 @@ laptop:
       soon.** Now that production deploys deliberately from the `production`
       branch, a bad release can be rolled back with
       `git push -f origin <sha>:production` — but that reverts _code only_.
-      `npm start` runs `prisma migrate deploy` and Prisma has no automatic
+      Every deploy runs `prisma migrate deploy` and Prisma has no automatic
       down-migration, so a destructive migration (dropped column, narrowed
       type, renamed field) survives the rollback and leaves old code running
       against a new schema. The deploy split we just made is what raises the

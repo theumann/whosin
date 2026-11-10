@@ -60,6 +60,12 @@ const nextConfig: NextConfig = {
   outputFileTracingRoot: path.join(__dirname),
   turbopack: { root: path.join(__dirname) },
 
+  // Emit a self-contained server (.next/standalone) that scripts/start.mjs
+  // runs in-process. Idle memory ~166 MB → ~94 MB vs `next start` (measured in a
+  // Linux container), and Railway bills for held memory. The build script
+  // copies public/ and .next/static/ in; see scripts/copy-standalone-assets.mjs.
+  output: "standalone",
+
   // Don't advertise the framework in an `x-powered-by` response header.
   poweredByHeader: false,
 
