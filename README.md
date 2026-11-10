@@ -379,13 +379,19 @@ Set on the Railway app service:
       `public/manifest.webmanifest` (`name`, `short_name`). `theme_color`
       still uses the placeholder slate — revisit once a brand color is
       picked alongside the logo.
-- [ ] **Create a logo + app icons.** The manifest references
-      `public/icon-192.png` and `public/icon-512.png` which **don't exist yet**;
-      also add a `favicon` and an `apple-touch-icon`. (Tools for the logo:
-      **Recraft** or **Midjourney** for the mark — Recraft can export clean SVG;
-      **Looka**/**Canva** for a quick wordmark; or just a typographic wordmark in
-      a nice font. Generate the icon sizes with a favicon generator like
-      realfavicongenerator.net.)
+- [x] **Create a logo + app icons.** The logo exists (`public/logo.png`). App
+      icons are a **placeholder "W" monogram** in the logo's blue→purple
+      gradient — neutral rather than a football, since the app is meant to
+      outgrow sports. Source: `design/app-icon.svg`. Rendered to
+      `public/icon-192.png` + `public/icon-512.png` (the manifest's icons),
+      `src/app/icon.png` (favicon, 48px) and `src/app/apple-icon.png` (180px);
+      Next adds the `<link>` tags for the two in `src/app` automatically. The
+      manifest referenced the `public/` icons from the first scaffold, but they
+      never existed — every install got a generic tile until 2026-11-10.
+- [ ] **Replace the placeholder icon with a designed mark** (a friend may design
+      one). Swap in the new artwork at the same four paths and sizes; a square,
+      full-bleed image works best, since phones and browsers apply their own
+      corner masks.
 - [ ] Verify **"Add to Home Screen"** shows the logo + name correctly on a phone.
 
 ### 7. Mobile testing 🟡
