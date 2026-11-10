@@ -1,0 +1,15 @@
+<!-- Source for the app icons (public/icon-*.png, src/app/icon.png, src/app/apple-icon.png).
+     Placeholder "W" monogram in the logo's blue→purple gradient until a designed mark exists.
+     The W is a path, not text, so it renders identically without depending on installed fonts.
+     Full-bleed square: phones and browsers apply their own corner masks. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="brand" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0a85fc"/>
+      <stop offset="1" stop-color="#a416e3"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" fill="url(#brand)"/>
+  <path transform="translate(106 136) scale(3)" fill="#ffffff" stroke="#ffffff" stroke-width="2" stroke-linejoin="round"
+        d="M0 0 H20 L30 56 L42 16 H58 L70 56 L80 0 H100 L80 80 H60 L50 44 L40 80 H20 Z"/>
+</svg>
